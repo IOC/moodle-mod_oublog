@@ -528,7 +528,7 @@ function oublog_edit_post($post, $cm) {
  * @return mixed all data to print a list of blog posts
  */
 function oublog_get_posts($oublog, $context, $offset = 0, $cm, $groupid, $individualid = -1,
-        $userid = null, $tag = '', $canaudit = false, $ignoreprivate = null) {
+        $userid = null, $tag = '', $canaudit = false, $ignoreprivate = null, $toprated = false) {
     global $CFG, $USER, $DB;
     $params = array();
     $sqlwhere = "bi.oublogid = ?";
@@ -605,6 +605,20 @@ function oublog_get_posts($oublog, $context, $offset = 0, $cm, $groupid, $indivi
             ORDER BY p.timeposted DESC
             ";
     $countsql = "SELECT count(p.id) $from WHERE $sqlwhere";
+
+    if ($toprated) {
+        $sql = "SELECT $fieldlist, AVG(r.rating) AS rating
+                $from
+                JOIN {oublog_ratings} r ON r.postid = p.id
+                WHERE $sqlwhere
+                GROUP BY id, oubloginstancesid, groupid, title, message,
+                         timeposted, allowcomments, timeupdated, deletedby,
+                         timedeleted, visibility, lasteditedby,
+                         individualvisible, oublogid, firstname, lastname,
+                         userid, idnumber, picture, imagealt, email, username,
+                         delfirstname, dellastname, edfirstname, edlastname
+                ORDER BY rating DESC, p.timeposted DESC";
+    }
 
     $rs = $DB->get_recordset_sql($sql, $params, $offset, OUBLOG_POSTS_PER_PAGE);
     if (!$rs->valid()) {
@@ -689,6 +703,13 @@ function oublog_get_posts($oublog, $context, $offset = 0, $cm, $groupid, $indivi
         }
     }
 
+    // Get ratings for all posts on page
+    $rs = $DB->get_recordset_list('oublog_ratings', 'postid', $postids);
+    foreach ($rs as $rating) {
+        $posts[$rating->postid]->ratings[$rating->userid] = $rating->rating;
+    }
+    $rs->close();
+
     return(array($posts, $recordcnt));
 }
 
@@ -758,6 +779,13 @@ function oublog_get_post($postid, $canaudit=false) {
         }
         $rs->close();
     }
+
+    // Get ratings for this post
+    $rs = $DB->get_recordset('oublog_ratings', array('postid' => $post->id));
+    foreach ($rs as $rating) {
+        $post->ratings[$rating->userid] = $rating->rating;
+    }
+    $rs->close();
 
     // Get edits for this post
     $sql = "SELECT e.id, e.timeupdated, e.oldtitle, e.userid, $usernamefields, u.picture, u.imagealt, u.email, u.idnumber

@@ -49,6 +49,7 @@ $string['tagsfield'] = 'Tags (separated by commas)';
 $string['allowcomments'] = 'Allow comments';
 $string['allowcommentsmax'] = 'Allow comments (if chosen for post)';
 $string['logincomments'] = 'Yes, from logged-in users';
+$string['allowratings'] = 'Allow ratings';
 $string['permalink'] = 'Permalink';
 $string['publiccomments'] = 'Yes, from everybody (even if not logged in)';
 $string['publiccomments_info'] = 'If somebody adds a comment when they are not

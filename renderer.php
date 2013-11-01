@@ -63,7 +63,7 @@ class mod_oublog_renderer extends plugin_renderer_base {
         $extraclasses .= ' oublog-hasuserpic';
         $extraclasses .= ' ' . $row;
 
-        $output .= html_writer::start_tag('div', array('class' => 'oublog-post'. $extraclasses));
+        $output .= html_writer::start_tag('div', array('class' => 'oublog-post'. $extraclasses, 'id' => 'oublog-post-' . $post->id));
         $output .= html_writer::start_tag('div', array('class' => 'oublog-post-top'));
         $fs = get_file_storage();
         if ($files = $fs->get_area_files($modcontext->id, 'mod_oublog', 'attachment', $post->id,
@@ -120,6 +120,33 @@ class mod_oublog_renderer extends plugin_renderer_base {
         }
         $output .= html_writer::start_tag('div', array('class' => 'oublog-post-top-details'));
         $formattedtitle = format_string($post->title);
+
+        if ($oublog->allowratings) {
+            $ratings = isset($post->ratings) ? $post->ratings : array();
+            $rating = $ratings ? round(2 * array_sum($ratings) / count($ratings)) * 0.5 : 0;
+            $userrating = isset($ratings[$USER->id]) ? $ratings[$USER->id] : 0;
+            $output .= html_writer::start_div('oublog-rating');
+            for ($i = 1; $i <= 5; $i++) {
+                $star =( $i <= $rating ? 'full' : ($i <= $rating + 0.5 ? 'half' : 'empty'));
+                $class = 'oublog-rating-star oublog-rating-star-' . $star;
+                if ($i <= $userrating) {
+                    $class .= ' oublog-rating-selected';
+                }
+                if ($userrating or $post->deletedby or $post->userid == $USER->id) {
+                    $output .= html_writer::div('', $class);
+                } else {
+                    $url = new moodle_url('/mod/oublog/ratepost.php');
+                    $url->param('post', $post->id);
+                    $url->param('rating', $i);
+                    $url->param('sesskey', sesskey());
+                    $url->param('returnurl', $baseurl);
+                    $url->set_anchor('oublog-post-' . $post->id);
+                    $output .= $this->output->action_link($url, '', null, array('class' => $class));
+                }
+            }
+            $output .= html_writer::end_div();
+        }
+
         if (trim($formattedtitle) !== '') {
             $output .= html_writer::tag('h2',
                     format_string($post->title), array('class' => 'oublog-title'));
