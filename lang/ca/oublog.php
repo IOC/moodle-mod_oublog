@@ -48,6 +48,7 @@ $string['tagsfield'] = 'Etiquetes (separades per comes)';
 $string['allowcomments'] = 'Permet comentaris';
 $string['allowcommentsmax'] = 'Permet comentaris (si es selecciona per a l\'entrada)';
 $string['logincomments'] = 'Sí, d\'usuaris autenticats';
+$string['allowratings'] = 'Permet valoracions';
 $string['permalink'] = 'Enllaç';
 $string['publiccomments'] = 'Sí, de tothom (fins i tot d\'usuaris no autenticats)';
 $string['publiccomments_info'] = 'Si algú afegeix un comentari sense estar autenticat, rebreu una

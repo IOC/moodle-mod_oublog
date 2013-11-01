@@ -13,6 +13,7 @@
         <FIELD NAME="intro" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="introformat" TYPE="int" LENGTH="4" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="text format of intro field"/>
         <FIELD NAME="allowcomments" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="0 = do not allow comments 1 = allow comments from signed-in users 2 = allow comments from signed-in users, and moderated comments from external users"/>
+        <FIELD NAME="allowratings" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Allow post ratings"/>
         <FIELD NAME="maxbytes" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="512000" SEQUENCE="false"/>
         <FIELD NAME="maxattachments" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="9" SEQUENCE="false" COMMENT="Number of attachments allowed per post"/>
         <FIELD NAME="maxvisibility" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="100" SEQUENCE="false"/>
@@ -181,6 +182,19 @@
       <INDEXES>
         <INDEX NAME="authorip" UNIQUE="false" FIELDS="authorip"/>
       </INDEXES>
+    </TABLE>
+    <TABLE NAME="oublog_ratings" COMMENT="Post ratings.">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="postid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="rating" TYPE="number" LENGTH="10" NOTNULL="false" SEQUENCE="false" DECIMALS="5"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="oublog_ratings_oublog_posts_fk" TYPE="foreign" FIELDS="postid" REFTABLE="oublog_posts" REFFIELDS="id"/>
+        <KEY NAME="oublog_ratings_user_fk" TYPE="foreign" FIELDS="userid" REFTABLE="user" REFFIELDS="id"/>
+      </KEYS>
     </TABLE>
   </TABLES>
 </XMLDB>
