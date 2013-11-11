@@ -529,12 +529,13 @@ function oublog_edit_post($post, $cm) {
  */
 function oublog_get_posts($oublog, $context, $offset = 0, $cm, $groupid, $individualid = -1,
         $userid = null, $tag = '', $canaudit = false, $ignoreprivate = null, $toprated = false,
-        $unread = false) {
+        $unread = false, $limit = 0) {
     global $CFG, $USER, $DB;
     $params = array($USER->id);
     $sqlwhere = "bi.oublogid = ?";
     $params[] = $oublog->id;
     $sqljoin = '';
+    $limit = $limit ?: OUBLOG_POSTS_PER_PAGE;
 
     if (isset($userid)) {
         $sqlwhere .= " AND bi.userid = ? ";
@@ -629,7 +630,7 @@ function oublog_get_posts($oublog, $context, $offset = 0, $cm, $groupid, $indivi
                 ORDER BY rating DESC, p.timeposted DESC";
     }
 
-    $rs = $DB->get_recordset_sql($sql, $params, $offset, OUBLOG_POSTS_PER_PAGE);
+    $rs = $DB->get_recordset_sql($sql, $params, $offset, $limit);
     if (!$rs->valid()) {
         return(false);
     }
@@ -641,7 +642,7 @@ function oublog_get_posts($oublog, $context, $offset = 0, $cm, $groupid, $indivi
     $postids    = array();
 
     foreach ($rs as $post) {
-        if ($cnt > OUBLOG_POSTS_PER_PAGE) {
+        if ($cnt > $limit) {
             break;
         }
         if (oublog_can_view_post($post, $USER, $context, $oublog)) {
@@ -737,11 +738,10 @@ function oublog_get_post($postid, $canaudit=false) {
     $usernamefields = get_all_user_name_fields(true, 'u');
     $delusernamefields = get_all_user_name_fields(true, 'ud', null, 'del');
     $editusernamefields = get_all_user_name_fields(true, 'ue', null, 'ed');
-
     // Get post
     $sql = "SELECT p.*, bi.oublogid, $usernamefields, u.picture, u.imagealt, bi.userid, u.idnumber, u.email, u.username,
                     $delusernamefields,
-                    $editusernamefield,
+                    $editusernamefields,
                     rt.id AS readid, rt.status AS readstatus
             FROM {oublog_posts} p
                 INNER JOIN {oublog_instances} bi ON p.oubloginstancesid = bi.id
