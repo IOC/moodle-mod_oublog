@@ -529,7 +529,7 @@ function oublog_edit_post($post, $cm) {
  */
 function oublog_get_posts($oublog, $context, $offset = 0, $cm, $groupid, $individualid = -1,
         $userid = null, $tag = '', $canaudit = false, $ignoreprivate = null, $toprated = false,
-        $unread = false, $limit = 0) {
+        $unread = false, $limit = 0, $count = false) {
     global $CFG, $USER, $DB;
     $params = array($USER->id);
     $sqlwhere = "bi.oublogid = ?";
@@ -636,6 +636,10 @@ function oublog_get_posts($oublog, $context, $offset = 0, $cm, $groupid, $indivi
     }
     // Get paging info
     $recordcnt = $DB->count_records_sql($countsql, $params);
+
+    if ($count) {
+        return $recordcnt;
+    }
 
     $cnt        = 0;
     $posts      = array();
