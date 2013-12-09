@@ -16,8 +16,8 @@
 
 $string['attachments'] = "Fitxers adjunts";
 $string['oublog'] = 'Blog';
-$string['modulename'] = 'Blog OU';
-$string['modulenameplural'] = 'Blogs OU';
+$string['modulename'] = 'Blog FPD';
+$string['modulenameplural'] = 'Blogs FPD';
 $string['modulename_help'] = 'El mòdul d\'activitat de blog permet la creació de blogs en un curs
  (són independents del sistema de blogs de Moodle). Podeu tenir blogs de curs (tots els participants
  del curs afegeixen entrades al mateix blog), blogs de grup, o blogs individuals.';
