@@ -1038,8 +1038,9 @@ class mod_oublog_renderer extends plugin_renderer_base {
                         array('courseid' => $oublog->course, 'size' => 70));
                 $output .= html_writer::end_tag('div');
             }
-            if (!$contenttitle) {
-                $output .= $title;
+            if (!$forexport) {
+                $commenttitle = get_accesshide(get_string('newcomment', 'mod_oublog'));
+                $output .= html_writer::tag('h2', $commenttitle, array('class' => 'oublog-title'));
             }
             $output .= html_writer::start_tag('div', array('class' => 'oublog-post-date'));
             $output .= oublog_date($comment->timeposted);
@@ -1069,9 +1070,6 @@ class mod_oublog_renderer extends plugin_renderer_base {
             $output .= html_writer::end_div();
             $output .= html_writer::start_tag('div',
                     array('class' => 'oublog-comment-content'));
-            if ($contenttitle) {
-                $output .= $title;
-            }
             if (!$forexport) {
                 if ($post->visibility == OUBLOG_VISIBILITY_PUBLIC) {
                     $fileurlbase = 'mod/oublog/pluginfile.php';
