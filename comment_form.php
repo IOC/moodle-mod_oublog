@@ -46,9 +46,6 @@ class mod_oublog_comment_form extends moodleform {
             $mform->addRule('authorname', get_string('required'), 'required', null, 'client');
         }
 
-        $mform->addElement('text', 'title', get_string('title', 'oublog'), 'size="48"');
-        $mform->setType('title', PARAM_TEXT);
-
         $messagetype = 'editor';
         if ($moderated) {
             $messagetype = 'textarea';
