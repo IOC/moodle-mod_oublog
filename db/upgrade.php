@@ -36,6 +36,12 @@ function xmldb_oublog_upgrade($oldversion=0) {
 
     $dbman = $DB->get_manager(); // Loads ddl manager and xmldb classes.
 
+    // Workaround for bad use of version numbers in patches
+    if ($oldversion == 2013110102) {
+        $oldversion = 2013101000;
+        $DB->set_field('modules', 'version', $oldversion, array('name' => 'oublog'));
+    }
+
     if ($oldversion < 2012031500) {
 
         // Define field grade to be added to oublog
