@@ -589,10 +589,7 @@ function oublog_get_posts($oublog, $context, $offset = 0, $cm, $groupid, $indivi
             $params[] = $groupid;
         }
     }
-    if (!$canaudit) {
-        $sqlwhere .= " AND (p.deletedby IS NULL or bi.userid = ?)";
-        $params[] = $USER->id;
-    }
+    $sqlwhere .= " AND p.deletedby IS NULL ";
     if ($tag) {
         $sqlwhere .= " AND t.tag = ? ";
         $params[] = $tag;
