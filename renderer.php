@@ -902,10 +902,7 @@ class mod_oublog_renderer extends plugin_renderer_base {
                         array('courseid' => $oublog->course, 'size' => 70));
                 $output .= html_writer::end_tag('div');
             }
-            if (trim(format_string($comment->title))!=='') {
-                $output .= html_writer::tag('h2', format_string($comment->title),
-                        array('class' => 'oublog-title'));
-            } else if (!$forexport) {
+            if (!$forexport) {
                 $commenttitle = get_accesshide(get_string('newcomment', 'mod_oublog'));
                 $output .= html_writer::tag('h2', $commenttitle, array('class' => 'oublog-title'));
             }
