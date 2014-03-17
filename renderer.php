@@ -1066,8 +1066,6 @@ class mod_oublog_renderer extends plugin_renderer_base {
                     if (!$forexport) {
                         $output .= '<a href="deletecomment.php?comment=' .
                                 $comment->id . '">' . $strdelete.'</a>';
-                    } else {
-                        $output .= $strdelete;
                     }
                 }
             }
