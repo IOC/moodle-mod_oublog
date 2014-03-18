@@ -4797,3 +4797,46 @@ function oublog_mark_read($post, $status=null) {
         $DB->set_field('oublog_read', 'status', $status, array('id' => $post->readid));
     }
 }
+
+// Backwards compatibiity with Moodle 2.5
+if (!function_exists('get_all_user_name_fields')) {
+    function get_all_user_name_fields($returnsql = false, $tableprefix = null, $prefix = null, $fieldprefix = null) {
+        $compatnames = array('firstnamephonetic',
+                             'lastnamephonetic',
+                             'middlename',
+                             'alternatename');
+        $alternatenames = array('firstname' => 'firstname',
+                                'lastname' => 'lastname');
+
+        // Let's add a prefix to the array of user name fields if provided.
+        if ($prefix) {
+            foreach ($alternatenames as $key => $altname) {
+                $alternatenames[$key] = $prefix . $altname;
+            }
+        }
+
+        // Create an sql field snippet if requested.
+        if ($returnsql) {
+            if ($tableprefix) {
+                if ($fieldprefix) {
+                    foreach ($alternatenames as $key => $altname) {
+                        $alternatenames[$key] = $tableprefix . '.' . $altname . ' AS ' . $fieldprefix . $altname;
+                    }
+                } else {
+                    foreach ($alternatenames as $key => $altname) {
+                        $alternatenames[$key] = $tableprefix . '.' . $altname;
+                    }
+                }
+            }
+            foreach ($compatnames as $compatname) {
+                if ($fieldprefix) {
+                    $alternatenames[$compatname] = '\'\' AS ' . $fieldprefix . $compatname;
+                } else {
+                    $alternatenames[$compatname] = '\'\' AS ' . $compatname;
+                }
+            }
+            $alternatenames = implode(',', $alternatenames);
+        }
+        return $alternatenames;
+    }
+}
