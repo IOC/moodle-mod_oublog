@@ -591,3 +591,12 @@ $string['group'] = 'Group ';
 $string['readtracking'] = 'Read tracking';
 $string['markread'] = 'Mark read';
 $string['markunread'] = 'Mark unread';
+
+// Reblogs
+$string['allowreblogs'] = 'Allow reblogs (individual blogs only)';
+$string['maxreblogs'] = 'Maximum number of displayed reblogs';
+$string['numreblogs'] = '{$a} reblogs';
+$string['onereblog'] = '1 reblog';
+$string['reblog'] = 'Reblog';
+$string['reblogged'] = 'Reblogged';
+$string['undoreblog'] = 'Undo reblog';

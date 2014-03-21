@@ -704,3 +704,25 @@ div.tagselector_result .tagselector_result_info {
 .oublog-unread {
     border: 1px solid #009cda;
 }
+
+.oublog-reblogged {
+    font-weight: bold;
+}
+
+/* Reblogs */
+
+.oublog-reblogs {
+    float: right;
+    max-width: 60%;
+    margin-bottom: 0.4em;
+    text-align: right;
+}
+
+.oublog-numreblogs {
+    margin-top: 0.4em;
+}
+
+.oublog-reblogs img {
+    display: inline;
+    vertical-align: middle;
+}
