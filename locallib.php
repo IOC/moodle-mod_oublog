@@ -546,7 +546,6 @@ function oublog_get_posts($oublog, $context, $offset = 0, $cm, $groupid, $indivi
     if ($individualid > -1) {
         $capable = oublog_individual_has_permissions($cm, $oublog, $groupid, $individualid);
         oublog_individual_add_to_sqlwhere($sqlwhere, $params, 'bi.userid', $oublog, $cm, $groupid, $individualid, $capable);
-
     } else {// No individual blog.
         if (isset($groupid) && $groupid) {
             $sqlwhere .= " AND p.groupid =  ? ";
@@ -718,6 +717,16 @@ function oublog_get_posts($oublog, $context, $offset = 0, $cm, $groupid, $indivi
     $rs = $DB->get_recordset_list('oublog_ratings', 'postid', $postids);
     foreach ($rs as $rating) {
         $posts[$rating->postid]->ratings[$rating->userid] = $rating->rating;
+    }
+    $rs->close();
+
+    // Get reblogs for all posts on page
+    $sql = 'SELECT u.id,r.postid,u.picture,u.imagealt,u.email,' . $usernamefields
+        . ' FROM {user} u JOIN {oublog_reblogs} r ON u.id = r.userid'
+        . ' WHERE r.postid IN (' . implode(',', $postids) . ')'
+        . ' ORDER BY r.timereblogged DESC';
+    foreach ($DB->get_recordset_sql($sql) as $r) {
+        $posts[$r->postid]->reblogs[$r->id] = $r;
     }
     $rs->close();
 
@@ -2220,6 +2229,15 @@ function oublog_individual_add_to_sqlwhere(&$sqlwhere, &$params, $userfield, $ou
 
     // Has not capability.
     if (!$capable) {
+        return;
+    }
+
+    if ($individualid > 0 and $oublog->allowreblogs) {
+        $sqlwhere .= " AND ($userfield = ? OR p.id IN ("
+            . ' SELECT rb.postid FROM {oublog_reblogs} rb'
+            . ' WHERE rb.userid = ?))';
+        $params[] = $individualid;
+        $params[] = $individualid;
         return;
     }
 

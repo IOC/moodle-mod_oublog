@@ -318,5 +318,45 @@ function xmldb_oublog_upgrade($oldversion=0) {
         }
     }
 
+    // PATCH: Reblogs
+    {
+        // Define field allowreblogs to be added to oublog.
+        $table = new xmldb_table('oublog');
+        $field = new xmldb_field('allowreblogs', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, '0', 'allowratings');
+
+        // Conditionally launch add field allowratings.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Define field maxreblogs be added to oublog.
+        $table = new xmldb_table('oublog');
+        $field = new xmldb_field('maxreblogs', XMLDB_TYPE_INTEGER, '4', null, XMLDB_NOTNULL, null, '5', 'allowreblogs');
+
+        // Conditionally launch add field maxreblogs.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Define table oublog_reblogs to be created.
+        $table = new xmldb_table('oublog_reblogs');
+
+        // Adding fields to table oublog_reblogs.
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('postid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('userid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('timereblogged', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+
+        // Adding keys to table oublog_reblogs.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+        $table->add_key('postid', XMLDB_KEY_FOREIGN, array('postid'), 'oublog_posts', array('id'));
+        $table->add_key('userid', XMLDB_KEY_FOREIGN, array('userid'), 'user', array('id'));
+
+        // Conditionally launch create table for oublog_reblogs.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+    }
+
     return true;
 }

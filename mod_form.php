@@ -59,6 +59,16 @@ class mod_oublog_mod_form extends moodleform_mod {
             $mform->addElement('checkbox', 'allowratings', get_string('allowratings', 'oublog'));
             $mform->setType('allowratings', PARAM_BOOL);
 
+            // Adding the "allowreblogs" field.
+            $mform->addElement('checkbox', 'allowreblogs', get_string('allowreblogs', 'oublog'));
+            $mform->setType('allowreblogs', PARAM_BOOL);
+
+            // Adding the "maxreblogs" field.
+            $choices = array(0, 1, 2, 3, 4, 5, 10, 15, 20, 25, 50);
+            $mform->addElement('select', 'maxreblogs', get_string('maxreblogs', 'oublog'), $choices);
+            $mform->setType('maxreblogs', PARAM_INT);
+            $mform->setDefault('maxreblogs', 5);
+
             // Adding the "individual" field.
             $options = array(OUBLOG_NO_INDIVIDUAL_BLOGS       => get_string('no_blogtogetheroringroups', 'oublog'),
                              OUBLOG_SEPARATE_INDIVIDUAL_BLOGS => get_string('separateindividualblogs', 'oublog'),

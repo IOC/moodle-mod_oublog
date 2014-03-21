@@ -37,7 +37,7 @@ class backup_oublog_activity_structure_step extends backup_activity_structure_st
 
         // Define each element separated
         $oublog = new backup_nested_element('oublog', array('id'), array('name', 'course',
-                'accesstoken', 'intro', 'introformat', 'allowcomments', 'allowratings', 'individual',
+                'accesstoken', 'intro', 'introformat', 'allowcomments', 'allowratings', 'allowreblogs', 'maxreblogs', 'individual',
                 'maxbytes', 'maxattachments', 'maxvisibility', 'global', 'views',
                 'completionposts', 'completioncomments', 'reportingemail', 'displayname',
                 'statblockon', 'allowimport', 'readtracking'));
@@ -74,6 +74,9 @@ class backup_oublog_activity_structure_step extends backup_activity_structure_st
         $reads = new backup_nested_element('reads');
         $read = new backup_nested_element('read', array('id'), array('userid', 'status'));
 
+        $reblogs = new backup_nested_element('reblogs');
+        $reblog = new backup_nested_element('reblog', array('id'), array('userid', 'timereblogged'));
+
         // Build the tree
         $oublog->add_child($instances);
         $instances->add_child($instance);
@@ -99,6 +102,9 @@ class backup_oublog_activity_structure_step extends backup_activity_structure_st
         $post->add_child($reads);
         $reads->add_child($read);
 
+        $post->add_child($reblogs);
+        $reblogs->add_child($reblog);
+
         // Define sources
         $oublog->set_source_table('oublog', array('id' => backup::VAR_ACTIVITYID));
 
@@ -116,6 +122,7 @@ class backup_oublog_activity_structure_step extends backup_activity_structure_st
                                           WHERE ti.postid=?", array(backup::VAR_PARENTID));
             $rating->set_source_table('oublog_ratings', array('postid' => backup::VAR_PARENTID));
             $read->set_source_table('oublog_read', array('postid' => backup::VAR_PARENTID));
+            $reblog->set_source_table('oublog_reblogs', array('postid' => backup::VAR_PARENTID));
         }
 
         // Define id annotations
@@ -128,6 +135,7 @@ class backup_oublog_activity_structure_step extends backup_activity_structure_st
         $link->annotate_ids('oublog_instances', 'id');
         $rating->annotate_ids('user', 'userid');
         $read->annotate_ids('user', 'userid');
+        $reblog->annotate_ids('user', 'userid');
 
         // Define file annotations
         $oublog->annotate_files('mod_oublog', 'intro', null); // This file area hasn't itemid
