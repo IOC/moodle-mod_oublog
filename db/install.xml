@@ -32,6 +32,7 @@
         <FIELD NAME="introonpost" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Show blog intro on post form page"/>
         <FIELD NAME="tags" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="Predefine tags to choose from when entering a tag on a post"/>
         <FIELD NAME="readtracking" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Tracking of read/unread posts."/>
+        <FIELD NAME="previewcomments" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Number of comments to preview."/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>

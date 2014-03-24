@@ -432,7 +432,7 @@ if ($posts) {
     foreach ($posts as $post) {
         $post->row = $rowcounter;
         echo $oublogoutput->render_post($cm, $oublog, $post, $returnurl, $blogtype,
-                $canmanageposts, $canaudit, true, false);
+                                        $canmanageposts, $canaudit, true, false, false, false, true);
         $rowcounter++;
     }
     echo "<div class='oublog-paging'>";
