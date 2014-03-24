@@ -30,6 +30,7 @@
         <FIELD NAME="statblockon" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Show the stat block"/>
         <FIELD NAME="allowimport" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="0 or 1 to enable importing of posts"/>
         <FIELD NAME="readtracking" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Tracking of read/unread posts."/>
+        <FIELD NAME="previewcomments" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Number of comments to preview."/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
