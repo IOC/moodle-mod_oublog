@@ -528,9 +528,10 @@ function oublog_edit_post($post, $cm) {
  * @return mixed all data to print a list of blog posts
  */
 function oublog_get_posts($oublog, $context, $offset = 0, $cm, $groupid, $individualid = -1,
-        $userid = null, $tag = '', $canaudit = false, $ignoreprivate = null, $toprated = false) {
+        $userid = null, $tag = '', $canaudit = false, $ignoreprivate = null, $toprated = false,
+        $unread = false) {
     global $CFG, $USER, $DB;
-    $params = array();
+    $params = array($USER->id);
     $sqlwhere = "bi.oublogid = ?";
     $params[] = $oublog->id;
     $sqljoin = '';
@@ -589,15 +590,22 @@ function oublog_get_posts($oublog, $context, $offset = 0, $cm, $groupid, $indivi
     $delusernamefields = get_all_user_name_fields(true, 'ud', null, 'del');
     $editusernamefields = get_all_user_name_fields(true, 'ue', null, 'ed');
 
+    // Unread
+    if ($unread) {
+        $sqlwhere .= " AND rt.id IS NULL or rt.status = 0";
+    }
+
     // Get posts
     $fieldlist = "p.*, bi.oublogid, $usernamefields, bi.userid, u.idnumber, u.picture, u.imagealt, u.email, u.username,
                 $delusernamefields,
-                $editusernamefields";
+                $editusernamefields,
+                rt.id AS readid, rt.status AS readstatus";
     $from = "FROM {oublog_posts} p
                 INNER JOIN {oublog_instances} bi ON p.oubloginstancesid = bi.id
                 INNER JOIN {user} u ON bi.userid = u.id
                 LEFT JOIN {user} ud ON p.deletedby = ud.id
                 LEFT JOIN {user} ue ON p.lasteditedby = ue.id
+                LEFT JOIN {oublog_read} rt ON rt.postid = p.id AND rt.userid = ?
                 $sqljoin";
     $sql = "SELECT $fieldlist
             $from
@@ -616,7 +624,8 @@ function oublog_get_posts($oublog, $context, $offset = 0, $cm, $groupid, $indivi
                          timedeleted, visibility, lasteditedby,
                          individualvisible, oublogid, firstname, lastname,
                          userid, idnumber, picture, imagealt, email, username,
-                         delfirstname, dellastname, edfirstname, edlastname
+                         delfirstname, dellastname, edfirstname, edlastname,
+                         readid, readstatus
                 ORDER BY rating DESC, p.timeposted DESC";
     }
 
@@ -724,7 +733,7 @@ function oublog_get_posts($oublog, $context, $offset = 0, $cm, $groupid, $indivi
  * @return mixed all data to print a list of blog posts
  */
 function oublog_get_post($postid, $canaudit=false) {
-    global $DB;
+    global $DB, $USER;
     $usernamefields = get_all_user_name_fields(true, 'u');
     $delusernamefields = get_all_user_name_fields(true, 'ud', null, 'del');
     $editusernamefields = get_all_user_name_fields(true, 'ue', null, 'ed');
@@ -732,17 +741,19 @@ function oublog_get_post($postid, $canaudit=false) {
     // Get post
     $sql = "SELECT p.*, bi.oublogid, $usernamefields, u.picture, u.imagealt, bi.userid, u.idnumber, u.email, u.username,
                     $delusernamefields,
-                    $editusernamefields
+                    $editusernamefield,
+                    rt.id AS readid, rt.status AS readstatus
             FROM {oublog_posts} p
                 INNER JOIN {oublog_instances} bi ON p.oubloginstancesid = bi.id
                 INNER JOIN {user} u ON bi.userid = u.id
                 LEFT JOIN {user} ud ON p.deletedby = ud.id
                 LEFT JOIN {user} ue ON p.lasteditedby = ue.id
+                LEFT JOIN {oublog_read} rt ON rt.postid = p.id AND rt.userid = ?
             WHERE p.id = ?
             ORDER BY p.timeposted DESC
             ";
 
-    if (!$post = $DB->get_record_sql($sql, array($postid))) {
+    if (!$post = $DB->get_record_sql($sql, array($USER->id, $postid))) {
         return(false);
     }
 
@@ -5212,5 +5223,23 @@ class oublog_participation_timefilter_form extends moodleform {
             }
         }
         return $errors;
+    }
+}
+
+function oublog_mark_read($post, $status=null) {
+    global $DB, $USER;
+
+    if ($status === null) {
+        $status = $post->readid ? $post->readstatus : true;
+    }
+
+    if (!$post->readid) {
+        $record = new stdClass;
+        $record->postid = $post->id;
+        $record->userid = $USER->id;
+        $record->status = $status;
+        $DB->insert_record('oublog_read', $record);
+    } elseif ($status != $post->readstatus) {
+        $DB->set_field('oublog_read', 'status', $status, array('id' => $post->readid));
     }
 }

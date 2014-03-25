@@ -29,6 +29,7 @@
         <FIELD NAME="allowimport" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="0 or 1 to enable importing of posts"/>
         <FIELD NAME="introonpost" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Show blog intro on post form page"/>
         <FIELD NAME="tags" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="Predefine tags to choose from when entering a tag on a post"/>
+        <FIELD NAME="readtracking" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Tracking of read/unread posts."/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
@@ -194,6 +195,19 @@
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
         <KEY NAME="oublog_ratings_oublog_posts_fk" TYPE="foreign" FIELDS="postid" REFTABLE="oublog_posts" REFFIELDS="id"/>
         <KEY NAME="oublog_ratings_user_fk" TYPE="foreign" FIELDS="userid" REFTABLE="user" REFFIELDS="id"/>
+      </KEYS>
+    </TABLE>
+    <TABLE NAME="oublog_read" COMMENT="Tracking of read/unread posts.">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="postid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="status" TYPE="int" LENGTH="1" NOTNULL="true" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="oublog_read_oublog_posts_fk" TYPE="foreign" FIELDS="postid" REFTABLE="oublog_posts" REFFIELDS="id"/>
+        <KEY NAME="oublog_read_user_fk" TYPE="foreign" FIELDS="userid" REFTABLE="user" REFFIELDS="id"/>
       </KEYS>
     </TABLE>
   </TABLES>

@@ -53,6 +53,8 @@ class mod_oublog_renderer extends plugin_renderer_base {
         $stredit = get_string('edit', 'oublog');
         $strdelete = get_string('delete', 'oublog');
         $strpermalink = get_string('permalink', 'oublog');
+        $strmarkread = get_string('markread', 'oublog');
+        $strmarkunread = get_string('markunread', 'oublog');
 
         $row = '';
         if (isset($post->row)) {
@@ -62,6 +64,9 @@ class mod_oublog_renderer extends plugin_renderer_base {
         $extraclasses = $post->deletedby ? ' oublog-deleted' : '';
         $extraclasses .= ' oublog-hasuserpic';
         $extraclasses .= ' ' . $row;
+        if (isloggedin() and $oublog->readtracking and !$post->readstatus) {
+            $extraclasses .= ' oublog-unread';
+        }
 
         $output .= html_writer::start_tag('div', array('class' => 'oublog-post'. $extraclasses, 'id' => 'oublog-post-' . $post->id));
         $output .= html_writer::start_tag('div', array('class' => 'oublog-post-top'));
@@ -286,6 +291,22 @@ class mod_oublog_renderer extends plugin_renderer_base {
         }
 
         $output .= html_writer::start_tag('div', array('class' => 'oublog-post-links'));
+
+        if (isloggedin() and $oublog->readtracking and !$forexport and !$email) {
+            $url = new moodle_url('/mod/oublog/markread.php');
+            $url->param('post', $post->id);
+            $url->param('sesskey', sesskey());
+            $url->param('returnurl', $baseurl);
+            $url->set_anchor('oublog-post-' . $post->id);
+            if (!$post->readid or $post->readstatus) {
+                $url->param('status', 0);
+                $output .= html_writer::tag('a', $strmarkunread, array('href' => $url));
+            } else {
+                $url->param('status', 1);
+                $output .= html_writer::tag('a', $strmarkread, array('href' => $url));
+            }
+        }
+
         if (!$forexport && !$email) {
             $output .= html_writer::tag('a', $strpermalink, array('href' => $CFG->wwwroot .
                     '/mod/oublog/viewpost.php?post=' . $post->id)).' ';

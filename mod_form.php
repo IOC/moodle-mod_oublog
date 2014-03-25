@@ -129,6 +129,10 @@ class mod_oublog_mod_form extends moodleform_mod {
             $mform->addRule('tags', get_string('maximumchars', '', 255),
                             'maxlength', 255, 'client');
 
+            // Read tracking.
+            $mform->addElement('checkbox', 'readtracking', get_string('readtracking', 'oublog'));
+            $mform->setType('readtracking', PARAM_BOOL);
+
             $this->standard_grading_coursemodule_elements();
             $mform->setDefault('grade', 0);
 

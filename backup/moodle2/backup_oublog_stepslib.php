@@ -40,7 +40,8 @@ class backup_oublog_activity_structure_step extends backup_activity_structure_st
                 'accesstoken', 'intro', 'introformat', 'allowcomments', 'allowratings', 'individual',
                 'maxbytes', 'maxattachments', 'maxvisibility', 'global', 'views',
                 'completionposts', 'completioncomments', 'reportingemail', 'displayname',
-                'statblockon', 'allowimport', 'introonpost', 'tags'));
+                'statblockon', 'allowimport', 'introonpost', 'tags', 'readtracking'));
+
         $instances = new backup_nested_element('instances');
 
         $instance = new backup_nested_element('instance', array('id'), array(
@@ -70,6 +71,9 @@ class backup_oublog_activity_structure_step extends backup_activity_structure_st
         $ratings = new backup_nested_element('ratings');
         $rating = new backup_nested_element('rating', array('id'), array('userid', 'rating'));
 
+        $reads = new backup_nested_element('reads');
+        $read = new backup_nested_element('read', array('id'), array('userid', 'status'));
+
         // Build the tree
         $oublog->add_child($instances);
         $instances->add_child($instance);
@@ -92,6 +96,9 @@ class backup_oublog_activity_structure_step extends backup_activity_structure_st
         $post->add_child($ratings);
         $ratings->add_child($rating);
 
+        $post->add_child($reads);
+        $reads->add_child($read);
+
         // Define sources
         $oublog->set_source_table('oublog', array('id' => backup::VAR_ACTIVITYID));
 
@@ -108,6 +115,7 @@ class backup_oublog_activity_structure_step extends backup_activity_structure_st
                                            ON t.id=ti.tagid
                                           WHERE ti.postid=?", array(backup::VAR_PARENTID));
             $rating->set_source_table('oublog_ratings', array('postid' => backup::VAR_PARENTID));
+            $read->set_source_table('oublog_read', array('postid' => backup::VAR_PARENTID));
         }
 
         // Define id annotations
@@ -119,6 +127,7 @@ class backup_oublog_activity_structure_step extends backup_activity_structure_st
         $edit->annotate_ids('user', 'userid');
         $link->annotate_ids('oublog_instances', 'id');
         $rating->annotate_ids('user', 'userid');
+        $read->annotate_ids('user', 'userid');
 
         // Define file annotations
         $oublog->annotate_files('mod_oublog', 'intro', null); // This file area hasn't itemid
