@@ -161,9 +161,11 @@ if (empty($download)) {
     $timefilter->display();
 }
 
+
+$controller = get_grading_manager($context, 'mod_oublog', 'participation')->get_active_controller();
 $oublogoutput->render_participation_list($cm, $course, $oublog, $groupid,
     $download, $page, $participation, $coursecontext, $viewfullnames,
-    $groupname);
+    $groupname, $controller !== null);
 
 if (empty($download)) {
     echo $OUTPUT->footer();

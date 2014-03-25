@@ -40,9 +40,10 @@ class oublog_participation_table extends flexible_table {
     public $groupname;
     public $extraheaders;
     private $hasgrades;
+    private $advancedgrading;
 
     public function __construct($cm, $course, $oublog, $groupid = 0,
-        $groupname, $hasgrades) {
+        $groupname, $hasgrades, $advancedgrading=false) {
 
         $this->cm = $cm;
         $this->course = $course;
@@ -50,6 +51,7 @@ class oublog_participation_table extends flexible_table {
         $this->groupid = $groupid;
         $this->groupname = $groupname;
         $this->hasgrades = $hasgrades;
+        $this->advancedgrading = $advancedgrading;
         parent::__construct('mod-oublog-participation');
     }
 
@@ -155,6 +157,11 @@ class oublog_participation_table extends flexible_table {
 
     public function grade_form_header() {
         global $USER;
+
+        if ($this->advancedgrading) {
+            return '';
+        }
+
         $output = '';
         $formattrs = array();
         $formattrs['action'] = new moodle_url('/mod/oublog/savegrades.php');
@@ -171,6 +178,10 @@ class oublog_participation_table extends flexible_table {
     }
 
     public function grade_form_footer() {
+        if ($this->advancedgrading) {
+            return '';
+        }
+
         $output = '';
         $savegrades = html_writer::empty_tag('input', array('type' => 'submit',
             'name' => 'savegrades', 'value' => get_string('savegrades', 'oublog')));
