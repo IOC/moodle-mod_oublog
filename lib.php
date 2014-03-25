@@ -812,7 +812,7 @@ function oublog_pluginfile($course, $cm, $context, $filearea, $args, $forcedownl
     // Make sure we're allowed to see it...
     // Check if coming from webservice - if so always allow.
     $ajax = constant('AJAX_SCRIPT') ? true : false;
-    if ($filearea != 'summary' && !$ajax && !oublog_can_view_post($post, $USER, $context, $oublog->global)) {
+    if ($filearea != 'summary' && !$ajax && !oublog_can_view_post($post, $USER, $context, $oublog)) {
         return false;
     }
     if ($filearea == 'attachment') {
@@ -871,7 +871,7 @@ function oublog_get_file_info($browser, $areas, $course, $cm, $context, $fileare
     }
     // Check if the user is allowed to view the post
     try {
-        if (!oublog_can_view_post($post, $USER, $context, $oublog->global)) {
+        if (!oublog_can_view_post($post, $USER, $context, $oublog)) {
             return null;
         }
     } catch (mod_forumng_exception $e) {
