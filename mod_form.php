@@ -119,6 +119,10 @@ class mod_oublog_mod_form extends moodleform_mod {
             $mform->addElement('checkbox', 'allowimport', get_string('allowimport', 'oublog'), '', 0);
             $mform->addHelpButton('allowimport', 'allowimport', 'oublog');
 
+            // Read tracking.
+            $mform->addElement('checkbox', 'readtracking', get_string('readtracking', 'oublog'));
+            $mform->setType('readtracking', PARAM_BOOL);
+
             $this->standard_grading_coursemodule_elements();
             $mform->setDefault('grade', 0);
 

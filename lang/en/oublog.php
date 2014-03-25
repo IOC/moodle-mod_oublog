@@ -544,3 +544,8 @@ $string['numberpostsmore'] = 'Plus {$a} more posts';
 $string['numbercommentsmore'] = 'Plus {$a} more comments';
 $string['viewmyparticipation'] = 'View my participation';
 $string['timestartenderror'] = 'Selection end date cannot be earlier than the start date';
+
+// Read tracking
+$string['readtracking'] = 'Read tracking';
+$string['markread'] = 'Mark read';
+$string['markunread'] = 'Mark unread';

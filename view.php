@@ -31,6 +31,7 @@ $username = optional_param('u', '', PARAM_USERNAME);// User login name.
 $offset = optional_param('offset', 0, PARAM_INT);   // Offset fo paging.
 $tag    = optional_param('tag', null, PARAM_TAG);   // Tag to display.
 $toprated = optional_param('toprated', false, PARAM_BOOL);
+$unread = optional_param('unread', false, PARAM_BOOL);
 
 // Set user value if u (username) set.
 if ($username != '') {
@@ -192,9 +193,16 @@ if ($oublog->individual) {
 // Get Posts.
 list($posts, $recordcount) = oublog_get_posts(
     $oublog, $context, $offset, $cm, $currentgroup, $currentindividual, $oubloguser->id,
-    $tag, $canaudit, false, $toprated);
+    $tag, $canaudit, false, $toprated, $unread);
 
-
+// Read tracking
+if (isloggedin() and $oublog->readtracking) {
+    if ($posts) {
+        foreach ($posts as $post) {
+            oublog_mark_read($post);
+        }
+    }
+}
 
 $hideunusedblog=!$posts && !$canpost && !$canaudit;
 

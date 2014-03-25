@@ -57,12 +57,13 @@
 .oublog-post {
     padding: 1em;
     min-height:0; /* ie7 */
-}
-.oublog-post.oublog-odd, .oublog-post-commented {
-    background-color: #F2F2F2;
+    margin-bottom: 10px;
     -moz-border-radius: 5px;
     -webkit-border-radius: 5px;
     border-radius: 5px;
+}
+.oublog-post.oublog-odd, .oublog-post-commented {
+    background-color: #F2F2F2;
 }
 .oublog-sideblock {
     border: 1px solid #ddd;
@@ -485,6 +486,7 @@ div.oublog-accordion-closed {
     cursor: pointer;
     font-size: 1.15em;
 }
+
 /** Import Posts **/
 .oublog_importpostbutton {
     margin-left: .5em;
@@ -527,4 +529,8 @@ div.oublog-accordion-closed {
 }
 .oublog_import_step1 .flexible .header.c3 a {
     font-size: .75em;
+}
+
+.oublog-unread {
+    border: 1px solid #009cda;
 }
