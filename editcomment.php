@@ -53,7 +53,7 @@ $context = context_module::instance($cm->id);
 
 oublog_check_view_permissions($oublog, $context, $cm);
 $post->userid=$oubloginstance->userid; // oublog_can_view_post needs this
-if (!oublog_can_view_post($post, $USER, $context, $oublog->global)) {
+if (!oublog_can_view_post($post, $USER, $context, $oublog)) {
     print_error('accessdenied', 'oublog');
 }
 

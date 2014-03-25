@@ -84,7 +84,7 @@ if (!$oubloginstance = $DB->get_record('oublog_instances',
     print_error('invalidblog', 'oublog');
 }
 
-if (!oublog_can_view_post($post, $USER, $context, $oublog->global)) {
+if (!oublog_can_view_post($post, $USER, $context, $oublog)) {
     print_error('accessdenied', 'oublog');
 }
 

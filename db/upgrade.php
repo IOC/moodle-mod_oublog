@@ -238,5 +238,17 @@ function xmldb_oublog_upgrade($oldversion=0) {
         upgrade_mod_savepoint(true, 2014012702, 'oublog');
     }
 
+    // PATCH: Allow hidden posts in visible individual blogs
+    {
+        // Define field individualvisible to be added to oublog_posts.
+        $table = new xmldb_table('oublog_posts');
+        $field = new xmldb_field('individualvisible', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, '1', 'lasteditedby');
+
+        // Conditionally launch add field individualvisible.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+    }
+
     return true;
 }

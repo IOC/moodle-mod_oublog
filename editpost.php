@@ -170,6 +170,7 @@ if (!$frmpost = $mform->get_data()) {
 
     $post = $frmpost;
     // Handle form submission.
+    $post->individualvisible = !empty($post->individualvisible);
     if (!empty($post->post)) {
         // update the post
         $post->id = $post->post;
