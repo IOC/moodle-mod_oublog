@@ -462,7 +462,7 @@ if ($posts) {
                         'canaudit' => $canaudit,
                         'tag' =>  $tagid,
                         'cmid' => $cm->id, ), 'mod_oublog');
-        echo $button->to_html(PORTFOLIO_ADD_TEXT_LINK) .
+        echo $button->to_html(PORTFOLIO_ADD_TEXT_LINK, get_string('export', 'oublog')) .
         get_string('exportpostscomments', 'oublog');
     }
     echo '</div>';

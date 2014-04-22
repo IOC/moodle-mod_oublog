@@ -58,6 +58,7 @@ class mod_oublog_renderer extends plugin_renderer_base {
         $strreblog = get_string('reblog', 'oublog');
         $strreblogged = get_string('reblogged', 'oublog');
         $strundoreblog = get_string('undoreblog', 'oublog');
+        $strexport = get_string('export', 'oublog');
 
         $row = '';
         if (isset($post->row)) {
@@ -365,7 +366,7 @@ class mod_oublog_renderer extends plugin_renderer_base {
                     } else {
                         $button->set_formats(PORTFOLIO_FORMAT_RICHHTML);
                     }
-                    $output .= $button->to_html(PORTFOLIO_ADD_TEXT_LINK).' ';
+                    $output .= $button->to_html(PORTFOLIO_ADD_TEXT_LINK , $strexport).' ';
                 }
             }
             // Show OU Alerts reporting link.
