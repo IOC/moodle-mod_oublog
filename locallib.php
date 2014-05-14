@@ -2867,6 +2867,17 @@ class oublog_portfolio_caller extends portfolio_module_caller_base {
         if ($usehtmls) {
             $output .= html_writer::end_tag('body') . html_writer::end_tag('html');
         }
+
+        if ($this->get('exporter')->get('instance')->get('plugin') == 'wordpress') {
+            $output = '<html>head><title>' . s($post->title) . '</title>';
+            $created = gmstrftime('%Y-%m-%dT%H:%M:%S+0000', $post->timeposted);
+            $output .= '<meta property="dc:created" content="' . $created . '"/>';
+            $message = portfolio_rewrite_pluginfile_urls(
+                $post->message, $context->id, 'mod_oublog', 'message', $post->id, $format);
+            $message = format_text($message, FORMAT_HTML);
+            $output .= "</head><body>$message</body></html>";
+        }
+
         return $output;
     }
     /**
