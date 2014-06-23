@@ -443,7 +443,8 @@ if ($posts) {
     // Will need to be passed enough details on the blog so it can accurately work out what
     // posts are displayed (as oublog_get_posts above).
     if (!empty($CFG->enableportfolios) &&
-            (has_capability('mod/oublog:exportpost', $context))) {
+        (has_capability('mod/oublog:exportpost', $context) ||
+         has_capability('mod/oublog:exportownpost', $context))) {
         require_once($CFG->libdir . '/portfoliolib.php');
         if ($canaudit) {
             $canaudit = 1;
@@ -471,8 +472,10 @@ if ($posts) {
                         'canaudit' => $canaudit,
                         'tag' =>  $tagid,
                         'cmid' => $cm->id, ), 'mod_oublog');
-        echo $button->to_html(PORTFOLIO_ADD_TEXT_LINK, get_string('export', 'oublog')) .
-        get_string('exportpostscomments', 'oublog');
+        $str = get_string('export', 'oublog') . ' ' .
+            get_string(has_capability('mod/oublog:exportpost', $context) ?
+                       'exportpostscomments' : 'exportownpostscomments', 'oublog');
+        echo $button->to_html(PORTFOLIO_ADD_TEXT_LINK, $str);
     }
     echo '</div>';
 }
