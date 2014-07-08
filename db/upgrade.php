@@ -39,7 +39,7 @@ function xmldb_oublog_upgrade($oldversion=0) {
     // Workaround for bad use of version numbers in patches
     if ($oldversion == 2013110102) {
         $oldversion = 2013101000;
-        $DB->set_field('modules', 'version', $oldversion, array('name' => 'oublog'));
+        set_config('version', $oldversion, 'mod_oublog');
     }
 
     if ($oldversion < 2012031500) {
