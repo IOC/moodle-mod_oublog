@@ -26,6 +26,7 @@
 
 require_once(dirname(__FILE__) . '/../../config.php');
 require_once($CFG->dirroot.'/mod/oublog/locallib.php');
+require_once($CFG->dirroot.'/grade/grading/lib.php');
 
 $id         = required_param('id', PARAM_INT); // Course Module ID
 $groupid    = optional_param('group', 0, PARAM_INT);
