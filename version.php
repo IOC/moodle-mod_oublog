@@ -23,8 +23,10 @@
  * @package oublog
  **/
 
-$module->version  = 2015052900;
-$module->requires = 2014051200;
-$module->cron     = 60*60*4; // 4 hours.
+defined('MOODLE_INTERNAL') || die();
 
-$module->displayversion = 'Unused';
+$plugin->version  = 2015052900;
+$plugin->requires = 2014051200;
+$plugin->cron     = 60*60*4; // 4 hours.
+
+$plugin->displayversion = 'Unused';
