@@ -380,3 +380,15 @@ $string['mygrade'] = 'La meva qualificació';
 
 // Export link
 $string['export'] = 'Exporta';
+
+// Events
+$string['event:postcreated'] = 'Entrada creada';
+$string['event:commentcreated'] = 'Comentari creat';
+$string['event:commentdeleted'] = 'Comentari eliminat';
+$string['event:postdeleted'] = 'Entrada eliminada';
+$string['event:postupdated'] = 'Entrada actualitzada';
+$string['event:postviewed'] = 'Entrada visualitzada';
+$string['event:commentapproved'] = 'Aprovació d\'un comentari';
+$string['event:participationviewed'] = 'Visualització de la participació';
+$string['event:siteentriesviewed'] = 'Visualització de les entrades del lloc';
+$string['event:postimported'] = 'Importació d\'una entrada';

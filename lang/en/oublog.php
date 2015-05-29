@@ -610,3 +610,15 @@ $string['mygrade'] = 'My grade';
 
 // Export link
 $string['export'] = 'Export';
+
+// Events
+$string['event:postcreated'] = 'Post created';
+$string['event:commentcreated'] = 'Comment created';
+$string['event:commentdeleted'] = 'Comment deleted';
+$string['event:postdeleted'] = 'Post deleted';
+$string['event:postupdated'] = 'Post updated';
+$string['event:postviewed'] = 'Post viewed';
+$string['event:commentapproved'] = 'Comment approved';
+$string['event:participationviewed'] = 'Participation viewed';
+$string['event:siteentriesviewed'] = 'Site entries viewed';
+$string['event:postimported'] = 'Post imported';

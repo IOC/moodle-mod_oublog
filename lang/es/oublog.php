@@ -113,3 +113,15 @@ $string['completioncommentshelp']='Se requiere comentario para completar';
 
 $string['maybehiddenposts']='Este blog contiene mensajes que Únicamente son visibles para los usuarios inscritos. Si usted tiene una cuenta de usuario, por favor <a href=\'{$a}\'>acceda para poder verlos</a>.';
 $string['noposts']='No hay mensajes visibles en este blog.';
+
+// Eventos
+$string['event:postcreated'] = 'Entrada creada';
+$string['event:commentcreated'] = 'Comentario creado';
+$string['event:commentdeleted'] = 'Comentario eliminado';
+$string['event:postdeleted'] = 'Entrada eliminada';
+$string['event:postupdated'] = 'Entrada actualizada';
+$string['event:postviewed'] = 'Entrada visualizada';
+$string['event:commentapproved'] = 'Aprobación de comentario';
+$string['event:participationviewed'] = 'Visualización de la participación';
+$string['event:siteentriesviewed'] = 'Visualización de las entrades del lugar';
+$string['event:postimported'] = 'Importación de una entrada';
