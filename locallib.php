@@ -589,7 +589,7 @@ function oublog_get_posts($oublog, $context, $offset = 0, $cm, $groupid, $indivi
 
     // Unread
     if ($unread) {
-        $sqlwhere .= " AND rt.id IS NULL or rt.status = 0";
+        $sqlwhere .= " AND (rt.id IS NULL OR rt.status = 0)";
     }
 
     // Get posts
