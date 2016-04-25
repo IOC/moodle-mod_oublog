@@ -113,9 +113,17 @@ class mod_oublog_post_form extends moodleform {
         if (OUBLOG_VISIBILITY_PUBLIC <= $maxvisibility) {
             $options[OUBLOG_VISIBILITY_PUBLIC] = oublog_get_visibility_string(OUBLOG_VISIBILITY_PUBLIC, $personal);
         }
-        if ($individualblog > OUBLOG_NO_INDIVIDUAL_BLOGS) {
+        if ($individualblog == OUBLOG_SEPARATE_INDIVIDUAL_BLOGS) {
             $mform->addElement('hidden', 'visibility', OUBLOG_VISIBILITY_COURSEUSER);
             $mform->setType('visibility', PARAM_INT);
+
+        } else if ($individualblog == OUBLOG_VISIBLE_INDIVIDUAL_BLOGS) {
+            $mform->addElement('hidden', 'visibility', OUBLOG_VISIBILITY_COURSEUSER);
+            $mform->setType('visibility', PARAM_INT);
+            $mform->addElement('checkbox', 'individualvisible', get_string('individualvisible', 'oublog'));
+            $mform->setType('individualvisible', PARAM_BOOL);
+            $mform->setDefault('individualvisible', true);
+
         } else if (OUBLOG_VISIBILITY_COURSEUSER != $maxvisibility) {
             $mform->addElement('select', 'visibility', get_string('visibility', 'oublog'), $options);
             $mform->setType('visibility', PARAM_INT);

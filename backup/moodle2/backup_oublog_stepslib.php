@@ -57,7 +57,7 @@ class backup_oublog_activity_structure_step extends backup_activity_structure_st
         $post  = new backup_nested_element('post', array('id'), array('groupid', 'title',
                                                                              'message', 'timeposted', 'allowcomments',
                                                                              'timeupdated', 'lasteditedby', 'deletedby',
-                                                                             'timedeleted', 'visibility'));
+                                                                             'timedeleted', 'visibility', 'individualvisible'));
 
         $ratings = new backup_nested_element('ratings');
 

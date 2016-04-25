@@ -282,6 +282,7 @@ $string['visibleindividualblogs'] = 'Visible individual blogs';
 
 $string['separateindividual'] = 'Separate individuals';
 $string['visibleindividual'] = 'Visible individuals';
+$string['individualvisible'] = 'Visible';
 $string['viewallusers'] = 'View all users';
 $string['viewallusersingroup'] = 'View all users in group';
 

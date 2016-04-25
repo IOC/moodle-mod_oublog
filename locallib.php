@@ -406,6 +406,12 @@ function oublog_can_view_post($post, $user, $context, $cm, $oublog, $childcm = n
     $correctglobal = isset($childoublog->global) ? $childoublog->global : $oublog->global;
     $correctcm = $childcm ? $childcm : $cm;
 
+    if ($oublog->individual == OUBLOG_VISIBLE_INDIVIDUAL_BLOGS and
+        !$post->individualvisible and $post->userid != $user->id and
+        !has_capability('mod/oublog:viewindividual', $context, $user)) {
+        return false;
+    }
+
     // Otherwise this is set to course visibility.
     if ($correctglobal) {
         // Private posts - only same user or has capability viewprivate can see.
@@ -662,7 +668,7 @@ function oublog_get_posts($oublog, $context, $offset = 0, $cm, $groupid, $indivi
     // Individual blog.
     if ($individualid > -1) {
         $capable = oublog_individual_has_permissions($cm, $oublog, $groupid, $individualid);
-        oublog_individual_add_to_sqlwhere($sqlwhere, $params, 'bi.userid', $postsoublog->id, $groupid, $individualid, $capable);
+        oublog_individual_add_to_sqlwhere($sqlwhere, $params, 'bi.userid', $postsoublog, $cm, $groupid, $individualid, $capable);
     } else {// No individual blog.
         if (isset($groupid) && $groupid) {
             $sqlwhere .= " AND p.groupid =  ? ";
@@ -1058,7 +1064,7 @@ function oublog_get_tags($oublog, $groupid, $cm, $oubloginstanceid=null, $indivi
     // If individual blog.
     if ($individualid > -1) {
         $capable = oublog_individual_has_permissions($cm, $oublog, $groupid, $individualid);
-        oublog_individual_add_to_sqlwhere($sqlwhere, $params, 'bi.userid', $tagsoublog->id, $groupid,
+        oublog_individual_add_to_sqlwhere($sqlwhere, $params, 'bi.userid', $tagsoublog, $cm, $groupid,
                 $individualid, $capable);
     } else {
         // No individual blog.
@@ -1634,7 +1640,7 @@ function oublog_get_feed_comments($blogid, $bloginstancesid, $postid, $user, $al
     }
     if ($individualid > 0 || $oublog->individual > OUBLOG_NO_INDIVIDUAL_BLOGS) {
         $capable = oublog_individual_has_permissions($cm, $oublog, $groupid, $individualid, $user->id);
-        oublog_individual_add_to_sqlwhere($sqlwhere, $params, 'i.userid', $oublog->id, $groupid, $individualid, $capable);
+        oublog_individual_add_to_sqlwhere($sqlwhere, $params, 'i.userid', $oublog, $cm, $groupid, $individualid, $capable);
     } else {
         if (isset($groupid) && $groupid) {
             $sqlwhere .= " AND p.groupid = ? ";
@@ -1734,7 +1740,7 @@ function oublog_get_feed_posts($blogid, $bloginstance, $user, $allowedvisibility
     // If individual blog.
     if ($individualid > 0 || $oublog->individual > OUBLOG_NO_INDIVIDUAL_BLOGS) {
         $capable = oublog_individual_has_permissions($cm, $oublog, $groupid, $individualid, $user->id);
-        oublog_individual_add_to_sqlwhere($sqlwhere, $params, 'i.userid', $oublog->id, $groupid, $individualid, $capable);
+        oublog_individual_add_to_sqlwhere($sqlwhere, $params, 'i.userid', $oublog, $cm, $groupid, $individualid, $capable, $user);
     } else {// No individual blog.
         if ($groupid) {
             $sqlwhere .= " AND p.groupid = ? ";
@@ -2445,7 +2451,9 @@ function oublog_individual_has_permissions($cm, $oublog, $groupid, $individualid
 }
 
 
-function oublog_individual_add_to_sqlwhere(&$sqlwhere, &$params, $userfield, $oublogid, $groupid=0, $individualid=0, $capable=true) {
+function oublog_individual_add_to_sqlwhere(&$sqlwhere, &$params, $userfield, $oublog, $cm, $groupid=0, $individualid=0, $capable=true, $user=null) {
+    global $USER;
+
     // Has not capability.
     if (!$capable) {
         return;
@@ -2460,7 +2468,7 @@ function oublog_individual_add_to_sqlwhere(&$sqlwhere, &$params, $userfield, $ou
 
     // A list of user is chosen.
     $from = " FROM {oublog_instances} bi ";
-    $where = " WHERE bi.oublogid=$oublogid ";
+    $where = " WHERE bi.oublogid={$oublog->id} ";
 
     // Individuals within a group.
     if (isset($groupid) && $groupid > 0) {
@@ -2472,6 +2480,15 @@ function oublog_individual_add_to_sqlwhere(&$sqlwhere, &$params, $userfield, $ou
     }
     $subsql =  "SELECT bi.userid $from $where";
     $sqlwhere .= " AND $userfield IN ($subsql)";
+
+    if ($oublog->individual == OUBLOG_VISIBLE_INDIVIDUAL_BLOGS) {
+        $user = $user ?: $USER;
+        $context = context_module::instance($cm->id);
+        if (!has_capability('mod/oublog:viewindividual', $context, $user)) {
+            $sqlwhere .= ' AND (p.individualvisible = 1 OR u.id = ?)';
+            $params[] = $user->id;
+        }
+    }
 }
 
 /**
