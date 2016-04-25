@@ -371,3 +371,6 @@ $string['undoreblog'] = 'Desfés reblog';
 
 // Preview comments
 $string['previewcomments'] = 'Nombre de comentaris previsualitzats';
+
+// Advanced grading
+$string['mygrade'] = 'La meva qualificació';

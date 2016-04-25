@@ -641,9 +641,10 @@ class mod_oublog_renderer extends plugin_renderer_base {
      * @param object $context current context
      * @param bool $viewfullnames flag for global users fullnames capability
      * @param string groupname group name for display, default ''
+     * @param bool $advancedgrading
      */
     public function render_participation_list($cm, $course, $oublog, $groupid,
-        $download, $page, $participation, $context, $viewfullnames, $groupname) {
+        $download, $page, $participation, $context, $viewfullnames, $groupname, $advancedgrading=false) {
         global $DB, $CFG, $OUTPUT;
 
         require_once($CFG->dirroot.'/mod/oublog/participation_table.php');
@@ -657,7 +658,7 @@ class mod_oublog_renderer extends plugin_renderer_base {
 
         $hasgrades = !empty($participation) && isset(reset($participation)->gradeobj);
         $table = new oublog_participation_table($cm, $course, $oublog,
-            $groupid, $groupname, $hasgrades);
+            $groupid, $groupname, $hasgrades, $advancedgrading);
         $table->setup($download);
         $table->is_downloading($download, $filename, get_string('participation', 'oublog'));
 
@@ -727,9 +728,19 @@ class mod_oublog_renderer extends plugin_renderer_base {
                             } else {
                                 $user->grade = abs($user->gradeobj->grade);
                             }
-                            $menu = html_writer::select(make_grades_menu($oublog->grade),
-                                'menu['.$user->id.']', $user->grade,
-                                array(-1 => get_string('nograde')), $attributes);
+                            $options = make_grades_menu($oublog->grade);
+                            if ($advancedgrading) {
+                                $url = new moodle_url('/mod/oublog/editadvancedgrade.php');
+                                $url->param('id', $cm->id);
+                                $url->param('user', $user->id);
+                                $url->param('group' , $groupid);
+                                $text = $user->grade >= 0 ? $options[$user->grade] : get_string('nograde');
+                                $menu = html_writer::link($url, $text);
+                            } else {
+                                $menu = html_writer::select(
+                                    $options, 'menu['.$user->id.']', $user->grade,
+                                    array(-1 => get_string('nograde')), $attributes);
+                            }
                             $gradeitem = '<div id="gradeuser'.$user->id.'">'. $menu .'</div>';
                         } else {
                             if (!isset($user->gradeobj->grade)) {
