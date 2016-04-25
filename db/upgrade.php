@@ -488,5 +488,17 @@ function xmldb_oublog_upgrade($oldversion=0) {
         }
     }
 
+    // PATCH: Preview comments
+    {
+        // Define field previewcomments to be added to oublog.
+        $table = new xmldb_table('oublog');
+        $field = new xmldb_field('previewcomments', XMLDB_TYPE_INTEGER, '2', null, XMLDB_NOTNULL, null, '0', 'readtracking');
+
+        // Conditionally launch add field previewcomments.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+    }
+
     return true;
 }

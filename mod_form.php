@@ -108,6 +108,11 @@ class mod_oublog_mod_form extends moodleform_mod {
             $mform->addElement('checkbox', 'readtracking', get_string('readtracking', 'oublog'));
             $mform->setType('readtracking', PARAM_BOOL);
 
+            // Preview Comments.
+            $choices = array(0, 1, 2, 3, 4, 5, 10 => 10, 15 => 15, 20 => 20);
+            $mform->addElement('select', 'previewcomments', get_string('previewcomments', 'oublog'), $choices);
+            $mform->setType('readtracking', PARAM_INT);
+
             // Show OU Alerts reporting link.
             if (oublog_oualerts_enabled()) {
                 $mform->addElement('text', 'reportingemail', get_string('reportingemail', 'oublog'),
