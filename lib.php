@@ -610,8 +610,13 @@ function oublog_supports($feature) {
         case FEATURE_GRADE_HAS_GRADE: return true;
         case FEATURE_RATE: return true;
         case FEATURE_SHOW_DESCRIPTION: return true;
+        case FEATURE_ADVANCED_GRADING: return true;
         default: return null;
     }
+}
+
+function oublog_grading_areas_list() {
+    return array('participation' => get_string('participation', 'oublog'));
 }
 
 /**
@@ -1527,4 +1532,19 @@ function oublog_get_user_grades($oublog, $userid = 0) {
         }
     }
     return $results;
+}
+
+function oublog_extend_navigation($node, $course, $module, $cm) {
+    global $CFG, $DB;
+
+    require_once($CFG->dirroot . '/grade/grading/lib.php');
+
+    if ($DB->get_field('oublog', 'grade', array('id' => $cm->instance))) {
+        $context = context_module::instance($cm->id);
+        $controller = get_grading_manager($context, 'mod_oublog', 'participation')->get_active_controller();
+        if ($controller) {
+            $url = new moodle_url('/mod/oublog/viewadvancedgrade.php', array('id' => $cm->id));
+            $node->add(get_string('mygrade', 'oublog'), $url, settings_navigation::TYPE_CUSTOM);
+        }
+    }
 }
