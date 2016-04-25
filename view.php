@@ -535,7 +535,9 @@ if ($posts) {
     // Show portfolio export link.
     // Will need to be passed enough details on the blog so it can accurately work out what
     // posts are displayed (as oublog_get_posts above).
-    if (!empty($CFG->enableportfolios) && (has_capability('mod/oublog:exportpost', $context))) {
+    if (!empty($CFG->enableportfolios) &&
+        (has_capability('mod/oublog:exportpost', $context) ||
+         has_capability('mod/oublog:exportownpost', $context))) {
         echo $oublogoutput->render_export_button_bottom($context, $oublog, $post, $oubloguserid,
                 $canaudit, $offset, $currentgroup, $currentindividual, $tagid, $cm);
     }
