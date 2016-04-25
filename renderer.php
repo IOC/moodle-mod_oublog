@@ -56,7 +56,8 @@ class mod_oublog_renderer extends plugin_renderer_base {
      */
     public function render_post($cm, $oublog, $post, $baseurl, $blogtype,
             $canmanageposts = false, $canaudit = false, $commentcount = true,
-            $forexport = false, $format = false, $email = false, $socialshareposition = 'top') {
+            $forexport = false, $format = false, $email = false, $socialshareposition = 'top',
+            $previewcomments = false) {
         global $CFG, $USER, $OUTPUT;
         $output = '';
         $modcontext = context_module::instance($cm->id);
@@ -473,6 +474,26 @@ class mod_oublog_renderer extends plugin_renderer_base {
         }
 
         $output .= html_writer::tag('div', '', array('style' => 'clear: both'));
+
+        if ($previewcomments and !empty($oublog->previewcomments) and !empty($post->comments) and !$forexport) {
+            $output .= html_writer::start_tag('div', array('class' => 'oublog-preview-comments'));
+            $comments = array_slice(array_reverse($post->comments), 0, $oublog->previewcomments);
+            $output .= html_writer::start_tag('ul');
+            foreach ($comments as $comment) {
+                $output .= html_writer::start_tag('li');
+                $output .= html_writer::tag(
+                    'span', s(fullname($comment)), array('class' => 'oublog-preview-comment-user' ));
+                $content = file_rewrite_pluginfile_urls($comment->message,
+                        $fileurlbase, $modcontext->id, 'mod_oublog', 'messagecomment',
+                        $comment->id);
+                $content = format_text($content, FORMAT_HTML);
+                $content = html_to_text($content, 0, false);
+                $output .= ' ' . s($content);
+                $output .= html_writer::end_tag('li');
+            }
+            $output .= html_writer::end_tag('ul');
+            $output .= html_writer::end_tag('div');
+        }
 
         $output .= html_writer::end_tag('div');
 

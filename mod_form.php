@@ -181,6 +181,14 @@ class mod_oublog_mod_form extends moodleform_mod {
             $mform->addElement('checkbox', 'readtracking', get_string('readtracking', 'oublog'));
             $mform->setType('readtracking', PARAM_BOOL);
 
+            // Preview Comments.
+            $choices = array(0, 1, 2, 3, 4, 5, 10, 15, 20);
+            $mform->addElement('select', 'previewcomments', get_string('previewcomments', 'oublog'), $choices);
+            $mform->setType('readtracking', PARAM_INT);
+
+            $this->standard_grading_coursemodule_elements();
+            $mform->setDefault('grade', 0);
+
             // Add standard elements, common to all modules.
             $features = new stdClass;
             $features->groupings = true;
