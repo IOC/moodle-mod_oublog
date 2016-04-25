@@ -584,7 +584,7 @@ $string['viewmyparticipation'] = 'View my participation';
 $string['viewallparticipation'] = 'View all participation';
 $string['timestartenderror'] = 'Selection end date cannot be earlier than the start date';
 
-$string['savefailtitle']='Post cannot be saved';
+$string['savefailtitle'] = 'Post cannot be saved';
 $string['savefailnetwork'] = '<p>Unfortunately, your changes cannot be saved at this time.
 This is due to a network error; the website is temporarily unavailable or you have been signed out. </p>
 <p>Saving has been disabled on this blog.
@@ -654,3 +654,8 @@ $string['restricttagsvalidation'] = 'Only \'Set\' tags are allowed to be entered
 $string['search:post'] = 'OU blog - posts';
 $string['search:activity'] = 'OU blog - activity information';
 $string['search:comments'] = 'OU blog - posts comments';
+
+// Read tracking
+$string['readtracking'] = 'Read tracking';
+$string['markread'] = 'Mark read';
+$string['markunread'] = 'Mark unread';

@@ -47,6 +47,9 @@ function oublog_add_instance($oublog) {
         $oublog->assesstimefinish = 0;
     }
 
+    $oublog->readtracking = !empty($oublog->readtracking);
+
+
     if (!$oublog->id = $DB->insert_record('oublog', $oublog)) {
         return(false);
     }
@@ -79,6 +82,9 @@ function oublog_update_instance($oublog) {
     global $DB;
     $oublog->id = $oublog->instance;
     $oublog->timemodified = time();
+
+    $oublog->readtracking = !empty($oublog->readtracking);
+
     if (!$DB->get_record('oublog', array('id' => $oublog->id))) {
         return(false);
     }
@@ -139,6 +145,9 @@ function oublog_delete_instance($oublogid) {
 
                     // edits
                     $DB->delete_records('oublog_edits', array('postid'=>$postid));
+
+                    // read
+                    $DB->delete_records('oublog_read', array('postid' => $postid));
                 }
 
                 // posts
@@ -1060,6 +1069,7 @@ function oublog_reset_userdata($data) {
         $DB->delete_records_select('oublog_comments', "postid IN ($postidsql)", $params);
         $DB->delete_records_select('oublog_comments_moderated', "postid IN ($postidsql)", $params);
         $DB->delete_records_select('oublog_edits', "postid IN ($postidsql)", $params);
+        $DB->delete_records_select('oublog_read', "postid IN ($postidsql)", $params);
 
         // Delete instance-related data.
         $insidsql = "SELECT ins.id
