@@ -42,7 +42,7 @@ class backup_oublog_activity_structure_step extends backup_activity_structure_st
                 'completionposts', 'completioncomments', 'reportingemail', 'displayname',
                 'statblockon', 'allowimport', 'introonpost', 'tags', 'assessed',
                 'assesstimestart', 'assesstimefinish', 'scale', 'grading', 'restricttags',
-                'postfrom', 'postuntil', 'commentfrom', 'commentuntil'
+                'postfrom', 'postuntil', 'commentfrom', 'commentuntil', 'readtracking'
         ));
         $instances = new backup_nested_element('instances');
 
@@ -75,6 +75,9 @@ class backup_oublog_activity_structure_step extends backup_activity_structure_st
         $taginstances = new backup_nested_element('tags');
         $taginstance  = new backup_nested_element('tag', array('id'), array('tag'));
 
+        $reads = new backup_nested_element('reads');
+        $read = new backup_nested_element('read', array('id'), array('userid', 'status'));
+
         // Build the tree
         $oublog->add_child($instances);
         $instances->add_child($instance);
@@ -97,6 +100,9 @@ class backup_oublog_activity_structure_step extends backup_activity_structure_st
         $post->add_child($taginstances);
         $taginstances->add_child($taginstance);
 
+        $post->add_child($reads);
+        $reads->add_child($read);
+
         // Define sources
         $oublog->set_source_table('oublog', array('id' => backup::VAR_ACTIVITYID));
 
@@ -117,6 +123,7 @@ class backup_oublog_activity_structure_step extends backup_activity_structure_st
                             'component' => backup_helper::is_sqlparam('mod_oublog'),
                             'ratingarea' => backup_helper::is_sqlparam('post')));
             $rating->set_source_alias('rating', 'value');
+            $read->set_source_table('oublog_read', array('postid' => backup::VAR_PARENTID));
         }
 
         // Define id annotations
@@ -130,6 +137,7 @@ class backup_oublog_activity_structure_step extends backup_activity_structure_st
         $oublog->annotate_ids('scale', 'scale');
         $rating->annotate_ids('scale', 'scaleid');
         $rating->annotate_ids('user', 'userid');
+        $read->annotate_ids('user', 'userid');
 
         // Define file annotations
         $oublog->annotate_files('mod_oublog', 'intro', null); // This file area hasn't itemid
