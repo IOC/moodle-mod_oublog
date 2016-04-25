@@ -671,3 +671,6 @@ $string['undoreblog'] = 'Undo reblog';
 
 // Preview comments
 $string['previewcomments'] = 'Number of comments to preview';
+
+// Advanced grading
+$string['mygrade'] = 'My grade';
