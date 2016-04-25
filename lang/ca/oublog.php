@@ -192,6 +192,7 @@ $string['visibleindividualblogs'] = 'Sí, visibles';
 
 $string['separateindividual'] = 'Blogs&nbsp;individuals&nbsp;separasts';
 $string['visibleindividual'] = 'Blogs&nbsp;individuals&nbsp;visibles';
+$string['individualvisible'] = 'Visible';
 $string['viewallusers'] = 'Mostra tots els usuaris';
 $string['viewallusersingroup'] = 'Mostra tots els usuaris del grup';
 
