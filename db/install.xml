@@ -13,6 +13,8 @@
         <FIELD NAME="intro" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="introformat" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="text format of intro field"/>
         <FIELD NAME="allowcomments" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="0 = do not allow comments 1 = allow comments from signed-in users 2 = allow comments from signed-in users, and moderated comments from external users"/>
+        <FIELD NAME="allowreblogs" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Allow post reblogging"/>
+        <FIELD NAME="maxreblogs" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="5" SEQUENCE="false" COMMENT="Max number of reblogs to display"/>
         <FIELD NAME="maxbytes" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="512000" SEQUENCE="false"/>
         <FIELD NAME="maxattachments" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="9" SEQUENCE="false" COMMENT="Number of attachments allowed per post"/>
         <FIELD NAME="maxvisibility" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="100" SEQUENCE="false"/>
@@ -207,6 +209,19 @@
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
         <KEY NAME="oublog_read_oublog_posts_fk" TYPE="foreign" FIELDS="postid" REFTABLE="oublog_posts" REFFIELDS="id"/>
         <KEY NAME="oublog_read_user_fk" TYPE="foreign" FIELDS="userid" REFTABLE="user" REFFIELDS="id"/>
+      </KEYS>
+    </TABLE>
+    <TABLE NAME="oublog_reblogs" COMMENT="Reblogged posts.">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="postid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="timereblogged" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="postid" TYPE="foreign" FIELDS="postid" REFTABLE="oublog_posts" REFFIELDS="id"/>
+        <KEY NAME="userid" TYPE="foreign" FIELDS="userid" REFTABLE="user" REFFIELDS="id"/>
       </KEYS>
     </TABLE>
   </TABLES>

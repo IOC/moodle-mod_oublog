@@ -359,3 +359,12 @@ $string['timestartenderror'] = 'La data de finalització no pot ser anterior a l
 $string['readtracking'] = 'Seguiment de lectura';
 $string['markread'] = 'Marca com a llegida';
 $string['markunread'] = 'Marca com a no llegida';
+
+// Reblogs
+$string['allowreblogs'] = 'Permet reblogs (només blogs individuals)';
+$string['maxreblogs'] = 'Nombre màxim de reblogs mostrats';
+$string['numreblogs'] = '{$a} reblogs';
+$string['onereblog'] = '1 reblog';
+$string['reblog'] = 'Reblogueja';
+$string['reblogged'] = 'Rebloguejat';
+$string['undoreblog'] = 'Desfés reblog';

@@ -836,6 +836,19 @@ function oublog_get_posts($oublog, $context, $offset = 0, $cm, $groupid, $indivi
         }
     }
 
+    if ($oublog->allowreblogs) {
+        // Get reblogs for all posts on page
+        $sql = 'SELECT u.id,r.postid,u.picture,u.imagealt,u.email,' . $usernamefields
+            . ' FROM {user} u'
+            . ' JOIN {oublog_reblogs} r ON u.id = r.userid'
+            . ' WHERE r.postid IN (' . implode(',', $postids) . ')'
+            . ' ORDER BY r.timereblogged DESC';
+        foreach ($DB->get_recordset_sql($sql) as $r) {
+            $posts[$r->postid]->reblogs[$r->id] = $r;
+        }
+        $rs->close();
+    }
+
     return(array($posts, $recordcnt));
 }
 
@@ -2462,6 +2475,15 @@ function oublog_individual_add_to_sqlwhere(&$sqlwhere, &$params, $userfield, $ou
 
     // Has not capability.
     if (!$capable) {
+        return;
+    }
+
+    if ($individualid > 0 and $oublog->allowreblogs) {
+        $sqlwhere .= " AND ($userfield = ? OR p.id IN ("
+            . ' SELECT rb.postid FROM {oublog_reblogs} rb'
+            . ' WHERE rb.userid = ?))';
+        $params[] = $individualid;
+        $params[] = $individualid;
         return;
     }
 
