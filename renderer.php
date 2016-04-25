@@ -1751,8 +1751,10 @@ EOF;
                 'ca_cmid' => $cm->id,
                 'ca_issharedblog' => $issharedblog));
 
+        $str = get_string(has_capability('mod/oublog:exportpost', $context) ?
+                       'exportpostscomments' : 'exportownpostscomments', 'oublog');
         $output .= html_writer::tag('a', get_string('addtoportfolio', 'portfolio'),
-                array('href' => $exportlink)) . get_string('exportpostscomments', 'oublog');
+                array('href' => $exportlink)) . $str;
 
         $output .= '</div>';
 

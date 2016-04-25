@@ -460,7 +460,8 @@ $string['posttitle'] = 'Post title';
 
 // Export.
 $string['exportedpost'] = 'Exported post';
-$string['exportpostscomments'] = ' all currently visible posts and their comments.';
+$string['exportpostscomments'] = ' all currently visible posts';
+$string['exportownpostscomments'] = ' currently visible own posts';
 $string['exportuntitledpost'] = 'An untitled post ';
 
 $string['configmaxattachments'] = 'Default maximum number of attachments allowed per blog post.';

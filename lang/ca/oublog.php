@@ -232,7 +232,8 @@ $string['posttitle'] = 'Títol de l\'entrada';
 
 // Export
 $string['exportedpost'] = 'Entrada exportada';
-$string['exportpostscomments'] = ' totes les entrades visibles i els seus comentaris.';
+$string['exportpostscomments'] = ' totes les entrades visibles';
+$string['exportownpostscomments'] = ' les meves entrades';
 $string['exportuntitledpost'] = 'Una entrada sense títol ';
 
 $string['configmaxattachments'] = 'Nombre màxim predeterminat permès de fitxers adjunts per entrada.';

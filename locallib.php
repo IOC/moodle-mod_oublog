@@ -5211,7 +5211,10 @@ class oublog_all_portfolio_caller extends oublog_portfolio_caller {
         list($this->posts, $recordcount) = oublog_get_posts($this->oublog,
             $context, $this->offset, $this->cm, $this->currentgroup, $this->currentindividual,
             $this->oubloguserid, $this->tag, $this->canaudit);
-
+        $this->posts = array_filter($this->posts, function($post) use ($context) {
+                global $USER;
+                return has_capability('mod/oublog:exportpost', $context) || $USER->id == $post->userid;
+        });
         $fs = get_file_storage();
         $this->multifiles = array();
         foreach ($this->posts as $post) {
@@ -5345,7 +5348,8 @@ class oublog_all_portfolio_caller extends oublog_portfolio_caller {
      */
     public function check_permissions() {
         $context = context_module::instance($this->cm->id);
-        return (has_capability('mod/oublog:exportpost', $context));
+        return (has_capability('mod/oublog:exportpost', $context) ||
+                has_capability('mod/oublog:exportownpost', $context));
     }
 }
 
