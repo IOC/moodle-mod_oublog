@@ -670,3 +670,6 @@ $string['previewcomments'] = 'Number of comments to preview';
 
 // Advanced grading
 $string['mygrade'] = 'My grade';
+
+// Export link
+$string['export'] = 'Export';
