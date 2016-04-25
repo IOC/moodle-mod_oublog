@@ -71,6 +71,9 @@ class mod_oublog_renderer extends plugin_renderer_base {
         $strpermalink = get_string('permalink', 'oublog');
         $strmarkread = get_string('markread', 'oublog');
         $strmarkunread = get_string('markunread', 'oublog');
+        $strreblog = get_string('reblog', 'oublog');
+        $strreblogged = get_string('reblogged', 'oublog');
+        $strundoreblog = get_string('undoreblog', 'oublog');
 
         $row = '';
         if (isset($post->row)) {
@@ -155,6 +158,21 @@ class mod_oublog_renderer extends plugin_renderer_base {
             $posttitle = get_accesshide(get_string('newpost', 'mod_oublog',
                     oublog_get_displayname($oublog)));
             $output .= html_writer::tag('h2', $posttitle, array('class' => 'oublog-title'));
+        }
+
+        // Reblogged by
+        if ($oublog->individual and $oublog->allowreblogs and !empty($post->reblogs) and !$forexport) {
+            $output .= html_writer::start_tag('div', array('class' => 'oublog-reblogs'));
+            foreach (array_slice($post->reblogs, 0, $oublog->maxreblogs) as $user) {
+                $output .= $this->output->user_picture($user, array('courseid' => $oublog->course, 'size' => 35));
+            }
+            if (count($post->reblogs) === 1) {
+                $strnreblogs = get_string('onereblog', 'oublog');
+            } else {
+                $strnreblogs = get_string('numreblogs', 'oublog', count($post->reblogs));
+            }
+            $output .= html_writer::tag('div', $strnreblogs, array('class' => 'oublog-numreblogs'));
+            $output .= html_writer::end_tag('div');
         }
 
         if ($post->deletedby) {
@@ -363,6 +381,32 @@ class mod_oublog_renderer extends plugin_renderer_base {
                 if ($reportlink != '' && !$forexport && !$email) {
                     $output .= html_writer::tag('a', get_string('postalert', 'oublog'),
                             array('href' => $reportlink));
+                }
+            }
+
+            // Reblogs
+            if (!$forexport and isloggedin() and oublog_can_post($oublog, $USER->id, $cm) and
+                $oublog->allowreblogs and $oublog->individual and
+                !$post->deletedby and $post->userid != $USER->id ) {
+
+                $url = new moodle_url('/mod/oublog/reblog.php');
+                $url->param('post', $post->id);
+                $url->param('sesskey', sesskey());
+                $url->param('returnurl', $baseurl);
+                $url->set_anchor('oublog-post-' . $post->id);
+                if (isset($post->reblogs[$USER->id])) {
+                    $url->param('reblog', 0);
+                    $output .= html_writer::tag('a', $strreblogged, array(
+                        'href' => $url,
+                        'class' => 'oublog-reblogged',
+                        'title' => s($strundoreblog),
+                    ));
+                } else {
+                    $url->param('reblog', 1);
+                    $output .= html_writer::tag('a', $strreblog, array(
+                        'href' => $url,
+                        'class' => 'oublog-reblog',
+                    ));
                 }
             }
 

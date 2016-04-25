@@ -46,6 +46,7 @@ class restore_oublog_activity_structure_step extends restore_activity_structure_
             $paths[] = new restore_path_element('oublog_edit', '/activity/oublog/instances/instance/posts/post/edits/edit');
             $paths[] = new restore_path_element('oublog_tag', '/activity/oublog/instances/instance/posts/post/tags/tag');
             $paths[] = new restore_path_element('oublog_read', '/activity/oublog/instances/instance/posts/post/reads/read');
+            $paths[] = new restore_path_element('oublog_reblog', '/activity/oublog/instances/instance/posts/post/reblogs/reblog');
         }
 
         // Return the paths wrapped into standard activity structure
@@ -209,6 +210,19 @@ class restore_oublog_activity_structure_step extends restore_activity_structure_
 
         $newitemid = $DB->insert_record('oublog_read', $data);
         $this->set_mapping('oublog_read', $oldid, $newitemid, true);
+    }
+
+    protected function process_oublog_reblog($data) {
+        global $DB;
+
+        $data = (object)$data;
+        $oldid = $data->id;
+
+        $data->postid = $this->get_new_parentid('oublog_post');
+        $data->userid = $this->get_mappingid('user', $data->userid);
+
+        $newitemid = $DB->insert_record('oublog_reblogs', $data);
+        $this->set_mapping('oublog_reblogs', $oldid, $newitemid, true);
     }
 
     protected function after_execute() {
