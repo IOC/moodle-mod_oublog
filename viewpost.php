@@ -109,6 +109,11 @@ if (!oublog_can_view_post($post, $USER, $context, $cm, $oublog)) {
     print_error('accessdenied', 'oublog');
 }
 
+// Read tracking
+if (isloggedin() and $oublog->readtracking) {
+    oublog_mark_read($post);
+}
+
 // Get strings.
 $stroublogs     = get_string('modulenameplural', 'oublog');
 $stroublog      = get_string('modulename', 'oublog');

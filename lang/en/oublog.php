@@ -738,3 +738,8 @@ $string['export:header_title'] = 'Title';
 $string['export:header_date_posted'] = 'Date posted';
 $string['export:header_tags'] = 'Tags';
 $string['export:header_author'] = 'Author';
+
+// Read tracking
+$string['readtracking'] = 'Read tracking';
+$string['markread'] = 'Mark read';
+$string['markunread'] = 'Mark unread';

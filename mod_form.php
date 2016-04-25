@@ -117,6 +117,10 @@ class mod_oublog_mod_form extends moodleform_mod {
             $mform->addHelpButton('postperpage', 'numberofposts', 'oublog');
             $mform->setDefault('postperpage', 25);
 
+            // Read tracking.
+            $mform->addElement('checkbox', 'readtracking', get_string('readtracking', 'oublog'));
+            $mform->setType('readtracking', PARAM_BOOL);
+
             // Show OU Alerts reporting link.
             if (oublog_oualerts_enabled()) {
                 $mform->addElement('text', 'reportingemail', get_string('reportingemail', 'oublog'),

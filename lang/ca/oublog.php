@@ -354,3 +354,8 @@ $string['numberpostsmore'] = 'I {$a} entrades més';
 $string['numbercommentsmore'] = 'I {$a} comentaris mñes';
 $string['viewmyparticipation'] = 'Mostra la meva participació';
 $string['timestartenderror'] = 'La data de finalització no pot ser anterior a la data d\'inici';
+
+// Read tracking
+$string['readtracking'] = 'Seguiment de lectura';
+$string['markread'] = 'Marca com a llegida';
+$string['markunread'] = 'Marca com a no llegida';
