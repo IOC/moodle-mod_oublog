@@ -570,7 +570,7 @@ if ($posts) {
     foreach ($posts as $post) {
         $post->row = $rowcounter;
         echo $oublogoutput->render_post($cm, $oublog, $post, $retnurl, $blogtype,
-                $canmanageposts, $canaudit, true, false, false, false, 'top', $cmmaster, $masterblog ? $cm->id : null);
+                $canmanageposts, $canaudit, true, false, false, false, 'top', $cmmaster, $masterblog ? $cm->id : null, null, false, true);
         $rowcounter++;
     }
     if ($recordcount > $postperpage) {

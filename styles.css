@@ -792,3 +792,31 @@ oublog-filter-tagcount {
     display: inline;
     vertical-align: middle;
 }
+
+/* Preview comments */
+
+.oublog-post-content {
+    margin-bottom: 0.2em;
+}
+
+.oublog-preview-comments {
+    font-size: 0.9em;
+    margin-top: 1.25em;
+}
+
+.oublog-preview-comments ul {
+    margin: 0;
+}
+
+.oublog-preview-comments li {
+    list-style: none;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.oublog-preview-comment-user {
+    margin-right: 0.25em;
+    font-weight: bold;
+    font-size: 0.9em;
+}

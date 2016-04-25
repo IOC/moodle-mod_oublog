@@ -800,7 +800,7 @@ function oublog_get_posts($oublog, $context, $offset = 0, $cm, $groupid, $indivi
     $rs->close();
 
     // Get comments for post on the page
-    $sql = "SELECT c.id, c.postid, c.timeposted, c.authorname, c.authorip, c.timeapproved, c.userid, $usernamefields, u.picture, u.imagealt, u.email, u.idnumber
+    $sql = "SELECT c.id, c.postid, c.timeposted, c.authorname, c.authorip, c.timeapproved, c.userid, $usernamefields, u.picture, u.imagealt, u.email, u.idnumber, c.message
             FROM {oublog_comments} c
             LEFT JOIN {user} u ON c.userid = u.id
             WHERE c.postid IN (".implode(",", $postids).") AND c.deletedby IS NULL

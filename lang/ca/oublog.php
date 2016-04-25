@@ -368,3 +368,6 @@ $string['onereblog'] = '1 reblog';
 $string['reblog'] = 'Reblogueja';
 $string['reblogged'] = 'Rebloguejat';
 $string['undoreblog'] = 'Desfés reblog';
+
+// Preview comments
+$string['previewcomments'] = 'Nombre de comentaris previsualitzats';
