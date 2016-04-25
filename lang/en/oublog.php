@@ -581,7 +581,7 @@ $string['viewmyparticipation'] = 'View my participation';
 $string['viewallparticipation'] = 'View all participation';
 $string['timestartenderror'] = 'Selection end date cannot be earlier than the start date';
 
-$string['savefailtitle']='Post cannot be saved';
+$string['savefailtitle'] = 'Post cannot be saved';
 $string['savefailnetwork'] = '<p>Unfortunately, your changes cannot be saved at this time.
 This is due to a network error; the website is temporarily unavailable or you have been signed out. </p>
 <p>Saving has been disabled on this blog.
@@ -647,3 +647,8 @@ $string['restricttags_help'] = 'If you select this option, you can restrict
 tag entry to only those that are pre-defined at activity level and/or require that at least one tag be entered in a post.';
 $string['restricttagslist'] = 'You may only enter the \'Set\' tags: {$a}';
 $string['restricttagsvalidation'] = 'Only \'Set\' tags are allowed to be entered';
+
+// Read tracking
+$string['readtracking'] = 'Read tracking';
+$string['markread'] = 'Mark read';
+$string['markunread'] = 'Mark unread';

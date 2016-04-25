@@ -167,6 +167,10 @@ class mod_oublog_mod_form extends moodleform_mod {
             $mform->setDefault('grade', $CFG->gradepointdefault);
             $mform->disabledIf('grade', 'grading', 'ne', OUBLOG_TEACHER_GRADING);
 
+            // Read tracking.
+            $mform->addElement('checkbox', 'readtracking', get_string('readtracking', 'oublog'));
+            $mform->setType('readtracking', PARAM_BOOL);
+
             // Add standard elements, common to all modules.
             $features = new stdClass;
             $features->groupings = true;
