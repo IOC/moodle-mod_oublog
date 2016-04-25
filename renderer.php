@@ -1692,7 +1692,9 @@ EOF;
                         'canaudit' => $canaudit,
                         'tag' => $tagid,
                         'cmid' => $cm->id), 'mod_oublog');
-        $output .= $button->to_html(PORTFOLIO_ADD_TEXT_LINK) . get_string('exportpostscomments', 'oublog');
+        $str = get_string(has_capability('mod/oublog:exportpost', $context) ?
+                       'exportpostscomments' : 'exportownpostscomments', 'oublog');
+        $output .= $button->to_html(PORTFOLIO_ADD_TEXT_LINK) . $str;
 
         $output .= '</div>';
 
