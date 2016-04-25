@@ -374,3 +374,6 @@ $string['previewcomments'] = 'Nombre de comentaris previsualitzats';
 
 // Advanced grading
 $string['mygrade'] = 'La meva qualificació';
+
+// Export link
+$string['export'] = 'Exporta';
