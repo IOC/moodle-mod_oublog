@@ -79,6 +79,7 @@
         <FIELD NAME="timedeleted" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="visibility" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="100" SEQUENCE="false"/>
         <FIELD NAME="lasteditedby" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="User ID of user to last edit post, or null if not edited"/>
+        <FIELD NAME="individualvisible" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="1" SEQUENCE="false"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
