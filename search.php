@@ -31,6 +31,8 @@ $user   = optional_param('user', 0, PARAM_INT);     // User ID
 $querytext = required_param('query', PARAM_RAW);
 $querytexthtml = htmlspecialchars($querytext);
 
+global $context, $oublog;
+
 if ($id) {
     if (!$cm = get_coursemodule_from_id('oublog', $id)) {
         print_error('invalidcoursemodule');
@@ -148,10 +150,6 @@ if ($oublog->individual && $individualdetails) {
 
 echo html_writer::end_div();
 
-global $modulecontext, $personalblog;
-$modulecontext=$context;
-$personalblog=$oublog->global ? true : false;
-
 // FINALLY do the actual query
 $query=new local_ousearch_search($querytext);
 $query->set_coursemodule($cm);
@@ -207,6 +205,6 @@ echo $OUTPUT->footer();
  * @param object $result Search result data
  */
 function visibility_filter(&$result) {
-    global $USER, $modulecontext, $personalblog;
-    return oublog_can_view_post($result->data, $USER, $modulecontext, $personalblog);
+    global $USER, $context, $oublog;
+    return oublog_can_view_post($result->data, $USER, $context, $oublog);
 }
