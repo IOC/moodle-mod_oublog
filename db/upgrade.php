@@ -477,5 +477,22 @@ function xmldb_oublog_upgrade($oldversion=0) {
         }
     }
 
+    // PATCH: Remove post ratings
+    {
+        // Define field allowratings to be removed to oublog.
+        $table = new xmldb_table('oublog');
+        $field = new xmldb_field('allowratings');
+        // Conditionally launch remove field allowratings.
+        if ($dbman->field_exists($table, $field)) {
+            $dbman->drop_field($table, $field);
+        }
+        // Define table oublog_ratings to be dropped.
+        $table = new xmldb_table('oublog_ratings');
+        // Conditionally launch drop table for oublog_ratings.
+        if ($dbman->table_exists($table)) {
+            $dbman->drop_table($table);
+        }
+    }
+
     return true;
 }
