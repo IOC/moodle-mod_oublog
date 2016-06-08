@@ -685,6 +685,8 @@ WHERE
 function oublog_print_overview($courses, &$htmlarray) {
     global $USER, $CFG, $DB;
 
+    require_once($CFG->dirroot. '/mod/oublog/locallib.php');
+
     if (empty($courses) || !is_array($courses) || count($courses) == 0) {
         return array();
     }
@@ -693,55 +695,37 @@ function oublog_print_overview($courses, &$htmlarray) {
         return;
     }
 
-    // get all  logs in ONE query
-    $sql = "SELECT instance,cmid,l.course,COUNT(l.id) as count FROM {log} l "
-    ." JOIN {course_modules} cm ON cm.id = cmid "
-    ." WHERE (";
-    $params = array();
-    foreach ($courses as $course) {
-        $sql .= '(l.course = ? AND l.time > ? )  OR ';
-        $params[] = $course->id;
-        $params[] = $course->lastaccess;
-    }
-    $sql = substr($sql, 0, -3); // take off the last OR
+    $strblog = get_string('modulename', 'oublog');
 
-    // Ignore comment actions for now, only entries.
-    $sql .= ") AND l.module = 'oublog' AND action in('add post','edit post')
-      AND userid != ? GROUP BY cmid,l.course,instance";
-    $params[] = $USER->id;
-    if (!$new = $DB->get_records_sql($sql, $params)) {
-        $new = array(); // avoid warnings
-    }
-
-    $strblogs = get_string('modulenameplural', 'oublog');
-
-    $site = get_site();
-    if (count( $courses ) == 1 && isset( $courses[$site->id])) {
-        $strnumrespsince1 = get_string('overviewnumentrylog1', 'oublog');
-        $strnumrespsince = get_string('overviewnumentrylog', 'oublog');
-    } else {
-        $strnumrespsince1 = get_string('overviewnumentryvw1', 'oublog');
-        $strnumrespsince = get_string('overviewnumentryvw', 'oublog');
-    }
+    $strnumunread = get_string('overviewnumunread', 'oublog');
+    $strnumunread1 = get_string('overviewnumunread1', 'oublog');
 
     // Go through the list of all oublog instances build previously, and check whether
     // they have had any activity.
     foreach ($blogs as $blog) {
-        if (array_key_exists($blog->id, $new) && !empty($new[$blog->id])) {
-            $count = $new[$blog->id]->count;
-            if ($count > 0) {
-                if ($count == 1) {
-                    $strresp = $strnumrespsince1;
-                } else {
-                    $strresp = $strnumrespsince;
-                }
+        $cm = get_coursemodule_from_instance('oublog', $blog->id);
+        $context = context_module::instance($cm->id);
+        $individualid = $blog->individual ? 0 : -1;
+        oublog_get_activity_groupmode($cm, $courses[$blog->course]);
+        $canaudit = has_capability('mod/oublog:audit', $context);
 
-                $str = '<div class="overview oublog"><div class="name">'.
-                $strblogs.': <a title="'.$strblogs.'" href="';
+        $count = oublog_get_posts(
+            $blog, $context, 0, $cm, 0, $individualid, null,
+            '', $canaudit, false, true, 0, true);
+
+        if ($count > 0) {
+            if ($count == 1) {
+                $strresp = $strnumunread1;
+            } else {
+                $strresp = $strnumunread;
+            }
+
+            $str = '<div class="overview oublog"><div class="name">'.
+                $strblog.': <a title="'.$strblog.'" href="';
                 if ($blog->global=='1') {
                     $str .= $CFG->wwwroot.'/mod/oublog/allposts.php">'.$blog->name.'</a></div>';
                 } else {
-                    $str .= $CFG->wwwroot.'/mod/oublog/view.php?id='.$new[$blog->id]->cmid.'">'.$blog->name.'</a></div>';
+                    $str .= $CFG->wwwroot.'/mod/oublog/view.php?id='.$cm->id.'">'.$blog->name.'</a></div>';
                 }
                 $str .= '<div class="info">';
                 $str .= $count.' '.$strresp;
@@ -754,10 +738,7 @@ function oublog_print_overview($courses, &$htmlarray) {
                     $htmlarray[$blog->course]['oublog'] = ''; // initialize, avoid warnings
                 }
                 $htmlarray[$blog->course]['oublog'] .= $str;
-
             }
-
-        }
 
     }
 
