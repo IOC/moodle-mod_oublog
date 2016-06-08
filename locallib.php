@@ -565,7 +565,7 @@ function oublog_edit_post($post, $cm) {
  * @return mixed all data to print a list of blog posts
  */
 function oublog_get_posts($oublog, $context, $offset = 0, $cm, $groupid, $individualid = -1,
-        $userid = null, $tag = '', $canaudit = false, $ignoreprivate = null, $unread = false, $limit = 0) {
+        $userid = null, $tag = '', $canaudit = false, $ignoreprivate = null, $unread = false, $limit = 0, $count = false) {
     global $CFG, $USER, $DB;
     $params = array($USER->id);
     $sqlwhere = "bi.oublogid = ?";
@@ -658,6 +658,10 @@ function oublog_get_posts($oublog, $context, $offset = 0, $cm, $groupid, $indivi
     $recordcnt = $DB->count_records_sql($countsql, $params);
     if (!$rs->valid()) {
         return array(false, $recordcnt);
+    }
+
+    if ($count) {
+        return $recordcnt;
     }
 
     $cnt        = 0;
