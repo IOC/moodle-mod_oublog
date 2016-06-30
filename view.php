@@ -213,8 +213,14 @@ list($posts, $recordcount) = oublog_get_posts($oublog, $context, $offset, $cm, $
 // Read tracking
 if (isloggedin() and $oublog->readtracking) {
     if ($posts) {
+        list($commentsunreadbypost, ) = oublog_get_unread_comments($posts);
         foreach ($posts as $post) {
             oublog_mark_read($post);
+        }
+        if ($oublog->allowcomments && $oublog->previewcomments) {
+            foreach ($posts as $post) {
+                oublog_mark_comments_read($post, $oublog->previewcomments);
+            }
         }
     }
 }
@@ -533,6 +539,9 @@ if ($posts) {
     $retnurl = $returnurl . '&page=' . $page;
     foreach ($posts as $post) {
         $post->row = $rowcounter;
+        if (isset($commentsunreadbypost[$post->id])) {
+            $post->unreadcomments = $commentsunreadbypost[$post->id];
+        }
         echo $oublogoutput->render_post($cm, $oublog, $post, $retnurl, $blogtype,
                 $canmanageposts, $canaudit, true, false, false, false, 'top', true);
         $rowcounter++;
