@@ -470,6 +470,15 @@ class mod_oublog_renderer extends plugin_renderer_base {
                     } else {
                         $output .= $linktext;
                     }
+                    // Display unread comments counter
+                    if (isset($post->unreadcomments)) {
+                        if ($post->unreadcomments == 1) {
+                            $strunreadcomments = get_string('overviewcommentsunread1', 'oublog', $post->unreadcomments);
+                        } else {
+                            $strunreadcomments = get_string('overviewcommentsunread', 'oublog', $post->unreadcomments);
+                        }
+                        $output .= html_writer::tag('span', '(' . $strunreadcomments . ')', array('class' => 'oublog-count-unread-comments'));
+                    }
                     // Display information about most recent comment.
                     if (isset($post->comments)) {
                         $last = array_pop($post->comments);
@@ -513,15 +522,20 @@ class mod_oublog_renderer extends plugin_renderer_base {
             $output .= html_writer::start_tag('div', array('class' => 'oublog-preview-comments'));
             $comments = array_slice(array_reverse($post->comments), 0, $oublog->previewcomments);
             $output .= html_writer::start_tag('ul');
+            $unreadcomments = (isloggedin() && $oublog->readtracking);
             foreach ($comments as $comment) {
-                $output .= html_writer::start_tag('li');
-                $output .= html_writer::tag(
-                    'span', s(fullname($comment)), array('class' => 'oublog-preview-comment-user' ));
+                $unreadclass = '';
+                if ($unreadcomments && !$comment->commentread) {
+                    $unreadclass .= 'oublog-comment-unread';
+                }
                 $content = file_rewrite_pluginfile_urls($comment->message,
                         $fileurlbase, $modcontext->id, 'mod_oublog', 'messagecomment',
                         $comment->id);
                 $content = format_text($content, FORMAT_HTML);
                 $content = html_to_text($content, 0, false);
+                $output .= html_writer::start_tag('li', array('class' => $unreadclass, 'title' => $content));
+                $output .= html_writer::tag(
+                    'span', s(fullname($comment)), array('class' => 'oublog-preview-comment-user' ));
                 $output .= ' ' . s($content);
                 $output .= html_writer::end_tag('li');
             }
@@ -1118,6 +1132,7 @@ class mod_oublog_renderer extends plugin_renderer_base {
                 $commenttitle = get_accesshide(get_string('newcomment', 'mod_oublog'));
                 $title = html_writer::tag('h3', $commenttitle, array('class' => 'oublog-title'));
             }
+            $extraclasses .= !$comment->commentread ? ' oublog-comment-unread' : '';
 
             $output .= html_writer::start_tag('div', array(
                     'class' => 'oublog-comment' . $extraclasses, 'id' => 'cid' . $comment->id));

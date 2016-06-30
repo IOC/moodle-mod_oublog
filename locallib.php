@@ -804,13 +804,14 @@ function oublog_get_posts($oublog, $context, $offset = 0, $cm, $groupid, $indivi
     $rs->close();
 
     // Get comments for post on the page
-    $sql = "SELECT c.id, c.postid, c.timeposted, c.authorname, c.authorip, c.timeapproved, c.userid, $usernamefields, u.picture, u.imagealt, u.email, u.idnumber, c.message
+    $sql = "SELECT c.id, c.postid, c.timeposted, c.authorname, c.authorip, c.timeapproved, c.userid, $usernamefields, u.picture, u.imagealt, u.email, u.idnumber, c.message, cr.id as commentread
             FROM {oublog_comments} c
             LEFT JOIN {user} u ON c.userid = u.id
+            LEFT JOIN {oublog_comments_read} cr ON cr.postid=c.postid AND cr.userid=? AND cr.commentid=c.id
             WHERE c.postid IN (".implode(",", $postids).") AND c.deletedby IS NULL
             ORDER BY c.timeposted ASC ";
 
-    $rs = $DB->get_recordset_sql($sql);
+    $rs = $DB->get_recordset_sql($sql, array($USER->id));
     foreach ($rs as $comment) {
         $posts[$comment->postid]->comments[$comment->id] = $comment;
     }
@@ -906,10 +907,11 @@ function oublog_get_post($postid, $canaudit=false) {
     // Get comments for post on the page
     if ($post->allowcomments) {
         $sql = "SELECT c.*, $usernamefields, u.picture, u.imagealt, u.email, u.idnumber,
-                    $delusernamefields
+                    $delusernamefields, cr.id as commentread
                 FROM {oublog_comments} c
                 LEFT JOIN {user} u ON c.userid = u.id
                 LEFT JOIN {user} ud ON c.deletedby = ud.id
+                LEFT JOIN {oublog_comments_read} cr ON cr.postid = c.postid AND cr.userid = ? AND cr.commentid = c.id
                 WHERE c.postid = ? ";
 
         if (!$canaudit) {
@@ -918,7 +920,7 @@ function oublog_get_post($postid, $canaudit=false) {
 
         $sql .= "ORDER BY c.timeposted ASC ";
 
-        $rs = $DB->get_recordset_sql($sql, array($postid));
+        $rs = $DB->get_recordset_sql($sql, array($USER->id, $postid));
         foreach ($rs as $comment) {
             $post->comments[$comment->id] = $comment;
         }
@@ -2176,7 +2178,7 @@ define('OUBLOG_VISIBLE_INDIVIDUAL_BLOGS', 2);
  * @return an object
  */
 function oublog_individual_get_activity_details($cm, $urlroot, $oublog, $currentgroup, $context, $cmmaster = null) {
-    global $CFG, $USER, $SESSION, $OUTPUT;
+    global $CFG, $USER, $SESSION, $OUTPUT, $DB;
     if (strpos($urlroot, 'http') !== 0) { // Will also work for https
         debugging('oublog_print_individual_activity_menu requires absolute URL for ' .
             '$urlroot, not <tt>' . s($urlroot) . '</tt>. Example: ' .
@@ -2233,8 +2235,39 @@ function oublog_individual_get_activity_details($cm, $urlroot, $oublog, $current
     }
 
     if ($allowedindividuals) {
+        // Get posts by user
+        list($userssql, $usersparams) = $DB->get_in_or_equal(array_keys($allowedindividuals), SQL_PARAMS_NAMED);
+        $sql = "SELECT p.id, u.id as userid
+                 FROM {user} u
+                 JOIN {oublog_instances} bi ON bi.userid = u.id
+                 JOIN {oublog_posts} p ON bi.id = p.oubloginstancesid
+                WHERE bi.oublogid = :oublogid
+                  AND u.id $userssql
+                  AND p.deletedby IS NULL";
+        $params = array(
+            'oublogid' => $oublog->id,
+        );
+        $params = array_merge($params, $usersparams);
+        $records = $DB->get_records_sql($sql, $params);
+
+        list($unreads, ) = oublog_get_unread_comments($records);
+        foreach ($records as $record) {
+            if (!isset($usersunread[$record->userid])) {
+                $usersunread[$record->userid] = 0;
+            }
+            $usersunread[$record->userid] += isset($unreads[$record->id]) ? $unreads[$record->id] : 0;
+        }
+
         foreach ($allowedindividuals as $user) {
-            $menu[$user->id] = format_string($user->firstname . ' ' . $user->lastname);
+            $msgunread = '';
+            if (isset($usersunread[$user->id]) && $usersunread[$user->id]) {
+                if ($usersunread[$user->id] > 1) {
+                    $msgunread = ' (' . get_string('overviewcommentsunread', 'oublog', $usersunread[$user->id]) . ')';
+                } else {
+                    $msgunread = ' (' . get_string('overviewcommentsunread1', 'oublog', $usersunread[$user->id]) . ')';
+                }
+            }
+            $menu[$user->id] = format_string($user->firstname . ' ' . $user->lastname . $msgunread);
         }
     }
 
@@ -5835,4 +5868,81 @@ function oublog_mark_read($post, $status=null) {
     } else if ($status != $post->readstatus) {
         $DB->set_field('oublog_read', 'status', $status, array('id' => $post->readid));
     }
+}
+
+function oublog_mark_comments_read($post, $limit=0) {
+    global $DB, $USER;
+
+    $sql = "SELECT c.id, p.id as postid
+            FROM {oublog_comments} c
+            JOIN {oublog_posts} p ON p.id=c.postid
+       LEFT JOIN {oublog_comments_read} cr ON cr.postid = c.postid AND cr.userid = :userid AND cr.commentid=c.id
+           WHERE c.postid = :postid
+             AND cr.id IS NULL
+             AND c.deletedby IS NULL";
+
+    if (isset($post->comments) && $limit) {
+        $getid = function($obj) {
+            return $obj->id;
+        };
+        $commentids = array_map($getid, array_slice(array_reverse($post->comments), 0, $limit));
+    } else {
+        $commentids = array();
+    }
+
+    $params = array(
+        'userid' => $USER->id,
+        'postid' => $post->id,
+    );
+
+    $rs = $DB->get_recordset_sql($sql, $params);
+
+    if ($rs->valid()) {
+        $records = array();
+        foreach ($rs as $comment) {
+            if (!$limit || ($limit && in_array($comment->id, $commentids))) {
+                $record = new stdClass();
+                $record->postid = $comment->postid;
+                $record->commentid = $comment->id;
+                $record->userid = $USER->id;
+                array_push($records, $record);
+            }
+        }
+        if (!empty($records)) {
+            $DB->insert_records('oublog_comments_read', $records);
+        }
+    }
+
+    $rs->close();
+}
+
+function oublog_get_unread_comments($posts) {
+    global $DB, $USER;
+
+    $getid = function($obj) {
+        return $obj->id;
+    };
+
+    $postsids = array_map($getid, $posts);
+    list($postssql, $postsparams) = $DB->get_in_or_equal($postsids, SQL_PARAMS_NAMED);
+    $sql = "SELECT p.id, COUNT(c.id) as unread
+            FROM {oublog_comments} c
+            JOIN {oublog_posts} p ON p.id=c.postid
+       LEFT JOIN {oublog_comments_read} cr ON cr.postid = c.postid AND cr.userid = :userid AND cr.commentid=c.id
+            WHERE c.postid $postssql
+            AND cr.id IS NULL
+            AND c.deletedby IS NULL
+            GROUP BY p.id";
+
+    $params = array(
+        'userid' => $USER->id,
+    );
+    $params = array_merge($params, $postsparams);
+
+    $records = $DB->get_records_sql_menu($sql, $params);
+    $total = 0;
+    foreach ($records as $unread) {
+        $total += $unread;
+    }
+    return array($records, $total);
 }

@@ -277,6 +277,8 @@ $string['overviewnumentryvw'] = 'entries since last viewed';
 $string['activityoverview'] = 'You have blogs that need attention';
 $string['overviewnumunread'] = ' unread messages';
 $string['overviewnumunread1'] = ' unread message';
+$string['overviewcommentsunread'] = '{$a} unread comments';
+$string['overviewcommentsunread1'] = '{$a} unread comment';
 
 $string['individualblogs'] = 'Individual blogs';
 $string['no_blogtogetheroringroups'] = 'No (blog together or in groups)';

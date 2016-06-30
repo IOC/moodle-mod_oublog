@@ -771,6 +771,18 @@ oublog-filter-tagcount {
     border: 1px solid #009cda;
 }
 
+#oublogcomments .oublog-comment-unread,
+.oublog-preview-comments .oublog-comment-unread{
+    border: 1px solid #009cda;
+    background-color: rgba(0, 156, 218, 0.1);
+    border-radius: 5px;
+}
+
+.oublog-post-links .oublog-count-unread-comments {
+    margin-right: 1em;
+    font-weight: bold;
+}
+
 .oublog-reblogged {
     font-weight: bold;
 }

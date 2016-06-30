@@ -148,8 +148,11 @@ function oublog_delete_instance($oublogid) {
                     // edits
                     $DB->delete_records('oublog_edits', array('postid'=>$postid));
 
-                    // read
+                    // read posts
                     $DB->delete_records('oublog_read', array('postid' => $postid));
+
+                    // read comments
+                    $DB->delete_records('oublog_comments_read', array('postid' => $postid));
 
                     // reblogs
                     $DB->delete_records('oublog_reblogs', array('postid' => $postid));
@@ -703,13 +706,39 @@ function oublog_print_overview($courses, &$htmlarray) {
     // Go through the list of all oublog instances build previously, and check whether
     // they have had any activity.
     foreach ($blogs as $blog) {
+        if (!$blog->readtracking) {
+            continue;
+        }
         $cm = get_coursemodule_from_instance('oublog', $blog->id);
         $context = context_module::instance($cm->id);
         $individualid = $blog->individual ? 0 : -1;
         oublog_get_activity_groupmode($cm, $courses[$blog->course]);
         $canaudit = has_capability('mod/oublog:audit', $context);
 
-        $count = oublog_get_posts($blog, $context, 0, $cm, 0, $individualid, null,
+        $groupmode = groups_get_activity_groupmode($cm);
+        $groupid = 0;
+        if (!has_capability('moodle/site:accessallgroups', $context) && $groupmode == SEPARATEGROUPS) {
+            $groupids = array_keys(groups_get_all_groups($blog->course, $USER->id));
+            if (!empty($groupids)) {
+                $groupid = array_shift($groupids);
+            }
+        }
+
+        list($posts, ) = oublog_get_posts(
+            $blog, $context, 0, $cm, $groupid, $individualid, null,
+            '', $canaudit);
+        if (!empty($posts)) {
+            list(, $countmessages) = oublog_get_unread_comments($posts);
+            if ($countmessages > 0) {
+                if ($countmessages == 1) {
+                    $strmessages = get_string('overviewcommentsunread1', 'oublog', $countmessages);
+                } else {
+                    $strmessages = get_string('overviewcommentsunread', 'oublog', $countmessages);
+                }
+            }
+        }
+
+        $count = oublog_get_posts($blog, $context, 0, $cm, $groupid, $individualid, null,
             '', $canaudit, null, null, null, '', true, true);
 
         if ($count > 0) {
@@ -728,6 +757,32 @@ function oublog_print_overview($courses, &$htmlarray) {
                 }
                 $str .= '<div class="info">';
                 $str .= $count.' '.$strresp;
+                $str .= '</div>';
+                if ($countmessages > 0) {
+                    $str .= '<div class="info">';
+                    $str .= $strmessages;
+                    $str .= '</div>';
+                }
+                $str .= '</div>';
+
+                if (!array_key_exists($blog->course, $htmlarray)) {
+                    $htmlarray[$blog->course] = array();
+                }
+                if (!array_key_exists('oublog', $htmlarray[$blog->course])) {
+                    $htmlarray[$blog->course]['oublog'] = ''; // initialize, avoid warnings
+                }
+                $htmlarray[$blog->course]['oublog'] .= $str;
+        } else if (!empty($posts)) {
+            if ($countmessages > 0) {
+                $str = '<div class="overview oublog"><div class="name">'.
+                $strblog.': <a title="'.$strblog.'" href="';
+                if ($blog->global=='1') {
+                    $str .= $CFG->wwwroot.'/mod/oublog/allposts.php">'.$blog->name.'</a></div>';
+                } else {
+                    $str .= $CFG->wwwroot.'/mod/oublog/view.php?id='.$cm->id.'">'.$blog->name.'</a></div>';
+                }
+                $str .= '<div class="info">';
+                $str .= $strmessages;
                 $str .= '</div></div>';
 
                 if (!array_key_exists($blog->course, $htmlarray)) {
@@ -738,7 +793,7 @@ function oublog_print_overview($courses, &$htmlarray) {
                 }
                 $htmlarray[$blog->course]['oublog'] .= $str;
             }
-
+        }
     }
 
 }
@@ -1061,6 +1116,7 @@ function oublog_reset_userdata($data) {
         $DB->delete_records_select('oublog_comments_moderated', "postid IN ($postidsql)", $params);
         $DB->delete_records_select('oublog_edits', "postid IN ($postidsql)", $params);
         $DB->delete_records_select('oublog_read', "postid IN ($postidsql)", $params);
+        $DB->delete_records_select('oublog_comments_read', "postid IN ($postidsql)", $params);
         $DB->delete_records_select('oublog_reblogs', "postid IN ($postidsql)", $params);
 
         // Delete instance-related data.
