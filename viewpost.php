@@ -97,6 +97,9 @@ if (!oublog_can_view_post($post, $USER, $context, $oublog)) {
 // Read tracking
 if (isloggedin() and $oublog->readtracking) {
     oublog_mark_read($post);
+    if ($oublog->allowcomments) {
+        oublog_mark_comments_read($post);
+    }
 }
 
 // Get strings.

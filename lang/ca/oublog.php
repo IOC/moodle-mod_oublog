@@ -187,6 +187,8 @@ $string['overviewnumentryvw'] = 'entrades des de l\'última visualització';
 $string['activityoverview'] = 'Teniu blogs que necessiten la vostra atenció';
 $string['overviewnumunread'] = ' entrades no llegides';
 $string['overviewnumunread1'] = ' entrada no llegida';
+$string['overviewcommentsunread'] = '{$a} comentaris no llegits';
+$string['overviewcommentsunread1'] = '{$a} comentari no llegit';
 
 $string['individualblogs'] = 'Blogs individuals';
 $string['no_blogtogetheroringroups'] = 'No (comú o per grups)';
