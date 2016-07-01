@@ -247,6 +247,13 @@ if (isloggedin() and $oublog->readtracking) {
     }
 }
 
+// Favourite tracking
+if (isloggedin()) {
+    if ($posts) {
+        list($commentsfavouritedbypost, ) = oublog_get_favourite_comments($posts);
+    }
+}
+
 $hideunusedblog = !$posts && !$canpost && !$canaudit;
 
 if ($oublog->global && !$hideunusedblog) {
@@ -579,6 +586,9 @@ if ($posts) {
         $post->row = $rowcounter;
         if (isset($commentsunreadbypost[$post->id])) {
             $post->unreadcomments = $commentsunreadbypost[$post->id];
+        }
+        if (isset($commentsfavouritedbypost[$post->id])) {
+            $post->favouritecomments = $commentsfavouritedbypost[$post->id];
         }
         echo $oublogoutput->render_post($cm, $oublog, $post, $retnurl, $blogtype,
                 $canmanageposts, $canaudit, true, false, false, false, 'top', $cmmaster, $masterblog ? $cm->id : null, null, false, true);

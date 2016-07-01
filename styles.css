@@ -778,7 +778,14 @@ oublog-filter-tagcount {
     border-radius: 5px;
 }
 
-.oublog-post-links .oublog-count-unread-comments {
+#oublogcomments .oublog-comment-favourite {
+    border: 1px solid #ffff6b;
+    background-color: rgba(255, 255, 204, 0.6);
+    border-radius: 5px;
+}
+
+.oublog-post-links .oublog-count-unread-comments,
+.oublog-post-links .oublog-count-favourite-comments {
     margin-right: 1em;
     font-weight: bold;
 }

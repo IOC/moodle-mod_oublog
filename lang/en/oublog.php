@@ -279,6 +279,8 @@ $string['overviewnumunread'] = ' unread messages';
 $string['overviewnumunread1'] = ' unread message';
 $string['overviewcommentsunread'] = '{$a} unread comments';
 $string['overviewcommentsunread1'] = '{$a} unread comment';
+$string['overviewcommentsfavourite'] = '{$a} favourite comments';
+$string['overviewcommentsfavourite1'] = '{$a} favourite comment';
 
 $string['individualblogs'] = 'Individual blogs';
 $string['no_blogtogetheroringroups'] = 'No (blog together or in groups)';
@@ -767,3 +769,7 @@ $string['mygrade'] = 'My grade';
 
 // Export link
 $string['export'] = 'Export';
+
+// Favourite comments
+$string['markasfav'] = 'Mark as favourite';
+$string['markasnofav'] = 'Mark as no favourite';

@@ -156,6 +156,9 @@ function oublog_delete_instance($oublogid) {
 
                     // reblogs
                     $DB->delete_records('oublog_reblogs', array('postid' => $postid));
+
+                    // favourite comments
+                    $DB->delete_records('oublog_comments_favourite', array('postid' => $postid));
                 }
 
                 // posts
@@ -736,6 +739,14 @@ function oublog_print_overview($courses, &$htmlarray) {
                     $strmessages = get_string('overviewcommentsunread', 'oublog', $countmessages);
                 }
             }
+            list(, $countfavourites) = oublog_get_favourite_comments($posts);
+            if ($countfavourites > 0) {
+                if ($countfavourites == 1) {
+                    $strfavourites = get_string('overviewcommentsfavourite1', 'oublog', $countfavourites);
+                } else {
+                    $strfavourites = get_string('overviewcommentsfavourite', 'oublog', $countfavourites);
+                }
+            }
         }
 
         $count = oublog_get_posts($blog, $context, 0, $cm, $groupid, $individualid, null,
@@ -763,6 +774,11 @@ function oublog_print_overview($courses, &$htmlarray) {
                     $str .= $strmessages;
                     $str .= '</div>';
                 }
+                if ($countfavourites > 0) {
+                    $str .= '<div class="info">';
+                    $str .= $strfavourites;
+                    $str .= '</div>';
+                }
                 $str .= '</div>';
 
                 if (!array_key_exists($blog->course, $htmlarray)) {
@@ -773,7 +789,7 @@ function oublog_print_overview($courses, &$htmlarray) {
                 }
                 $htmlarray[$blog->course]['oublog'] .= $str;
         } else if (!empty($posts)) {
-            if ($countmessages > 0) {
+            if ($countmessages > 0 || $countfavourites > 0) {
                 $str = '<div class="overview oublog"><div class="name">'.
                 $strblog.': <a title="'.$strblog.'" href="';
                 if ($blog->global=='1') {
@@ -781,9 +797,17 @@ function oublog_print_overview($courses, &$htmlarray) {
                 } else {
                     $str .= $CFG->wwwroot.'/mod/oublog/view.php?id='.$cm->id.'">'.$blog->name.'</a></div>';
                 }
-                $str .= '<div class="info">';
-                $str .= $strmessages;
-                $str .= '</div></div>';
+                if ($countmessages > 0) {
+                    $str .= '<div class="info">';
+                    $str .= $strmessages;
+                    $str .= '</div>';
+                }
+                if ($countfavourites > 0) {
+                    $str .= '<div class="info">';
+                    $str .= $strfavourites;
+                    $str .= '</div>';
+                }
+                $str .= '</div>';
 
                 if (!array_key_exists($blog->course, $htmlarray)) {
                     $htmlarray[$blog->course] = array();
@@ -1118,6 +1142,7 @@ function oublog_reset_userdata($data) {
         $DB->delete_records_select('oublog_read', "postid IN ($postidsql)", $params);
         $DB->delete_records_select('oublog_comments_read', "postid IN ($postidsql)", $params);
         $DB->delete_records_select('oublog_reblogs', "postid IN ($postidsql)", $params);
+        $DB->delete_records_select('oublog_comments_favourite', "postid IN ($postidsql)", $params);
 
         // Delete instance-related data.
         $insidsql = "SELECT ins.id

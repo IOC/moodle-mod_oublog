@@ -592,5 +592,29 @@ function xmldb_oublog_upgrade($oldversion=0) {
         }
     }
 
+    // PATCH: Tracking favourite comments
+    {
+
+        // Define table oublog_comments_favourite to be created.
+        $table = new xmldb_table('oublog_comments_favourite');
+
+        // Adding fields to table oublog_comments_favourite.
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('postid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('commentid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('userid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+
+        // Adding keys to table oublog_comments_favourite.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+        $table->add_key('oublog_favourite_oublog_posts_fk', XMLDB_KEY_FOREIGN, array('postid'), 'oublog_posts', array('id'));
+        $table->add_key('oublog_favourite_user_fk', XMLDB_KEY_FOREIGN, array('userid'), 'user', array('id'));
+        $table->add_key('oublog_favourite_comment_fk', XMLDB_KEY_FOREIGN, array('commentid'), 'oublog_comments', array('id'));
+
+        // Conditionally launch create table for oublog_comments_favourite.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+    }
+
     return true;
 }
