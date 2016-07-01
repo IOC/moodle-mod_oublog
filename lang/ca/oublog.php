@@ -189,6 +189,8 @@ $string['overviewnumunread'] = ' entrades no llegides';
 $string['overviewnumunread1'] = ' entrada no llegida';
 $string['overviewcommentsunread'] = '{$a} comentaris no llegits';
 $string['overviewcommentsunread1'] = '{$a} comentari no llegit';
+$string['overviewcommentsfavourite'] = '{$a} comentaris favorits';
+$string['overviewcommentsfavourite1'] = '{$a} comentari favorit';
 
 $string['individualblogs'] = 'Blogs individuals';
 $string['no_blogtogetheroringroups'] = 'No (comú o per grups)';
@@ -381,3 +383,7 @@ $string['mygrade'] = 'La meva qualificació';
 
 // Export link
 $string['export'] = 'Exporta';
+
+// Favourite comments
+$string['markasfav'] = 'Marca com a favorit';
+$string['markasnofav'] = 'Marca com a no favorit';
