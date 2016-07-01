@@ -466,6 +466,15 @@ class mod_oublog_renderer extends plugin_renderer_base {
                         }
                         $output .= html_writer::tag('span', '(' . $strunreadcomments . ')', array('class' => 'oublog-count-unread-comments'));
                     }
+                    // Display favourite comments counter
+                    if (isset($post->favouritecomments)) {
+                        if ($post->favouritecomments == 1) {
+                            $strfavouritecomments = get_string('overviewcommentsfavourite1', 'oublog', $post->favouritecomments);
+                        } else {
+                            $strfavouritecomments = get_string('overviewcommentsfavourite', 'oublog', $post->favouritecomments);
+                        }
+                        $output .= html_writer::tag('span', '(' . $strfavouritecomments . ')', array('class' => 'oublog-count-favourite-comments'));
+                    }
                     // Display information about most recent comment.
                     if (isset($post->comments)) {
                         $last = array_pop($post->comments);
@@ -1092,6 +1101,7 @@ class mod_oublog_renderer extends plugin_renderer_base {
                 $title = html_writer::tag('h3', $commenttitle, array('class' => 'oublog-title'));
             }
             $extraclasses .= !$comment->commentread ? ' oublog-comment-unread' : '';
+            $extraclasses .= $comment->commentfavourite ? ' oublog-comment-favourite' : '';
 
             $output .= html_writer::start_tag('div', array(
                     'class' => 'oublog-comment' . $extraclasses, 'id' => 'cid' . $comment->id));
@@ -1189,6 +1199,21 @@ class mod_oublog_renderer extends plugin_renderer_base {
                         $output .= '<a href="deletecomment.php?comment=' .
                                 $comment->id . '">' . $strdelete.'</a>';
                     }
+                }
+                if (!$forexport) {
+                    $strfavourite = $comment->commentfavourite ? get_string('markasnofav', 'oublog') : get_string('markasfav', 'oublog');
+                    $retnurl = new moodle_url('/mod/oublog/viewpost.php',
+                         array('post' => $post->id));
+                    $returnurl = $retnurl->out() . '#cid' . $comment->id;
+                    $params = array(
+                        'post' => $post->id,
+                        'comment' => $comment->id,
+                        'status' => is_null($comment->commentfavourite),
+                        'returnurl' => $returnurl,
+                        'sesskey' => sesskey(),
+                    );
+                    $url = new moodle_url('/mod/oublog/markfavourite.php', $params);
+                    $output .= html_writer::link($url, $strfavourite);
                 }
             }
             // Show OU Alerts reporting link.

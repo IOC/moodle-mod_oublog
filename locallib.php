@@ -811,11 +811,12 @@ function oublog_get_post($postid, $canaudit=false) {
     // Get comments for post on the page
     if ($post->allowcomments) {
         $sql = "SELECT c.*, $usernamefields, u.picture, u.imagealt, u.email, u.idnumber,
-                    $delusernamefields, cr.id as commentread
+                    $delusernamefields, cr.id as commentread, cf.id as commentfavourite
                 FROM {oublog_comments} c
                 LEFT JOIN {user} u ON c.userid = u.id
                 LEFT JOIN {user} ud ON c.deletedby = ud.id
                 LEFT JOIN {oublog_comments_read} cr ON cr.postid = c.postid AND cr.userid = ? AND cr.commentid = c.id
+                LEFT JOIN {oublog_comments_favourite} cf ON cf.postid = c.postid AND cf.userid = ? AND cf.commentid = c.id
                 WHERE c.postid = ? ";
 
         if (!$canaudit) {
@@ -824,7 +825,7 @@ function oublog_get_post($postid, $canaudit=false) {
 
         $sql .= "ORDER BY c.timeposted ASC ";
 
-        $rs = $DB->get_recordset_sql($sql, array($USER->id, $postid));
+        $rs = $DB->get_recordset_sql($sql, array($USER->id, $USER->id, $postid));
         foreach ($rs as $comment) {
             $post->comments[$comment->id] = $comment;
         }
@@ -2077,11 +2078,17 @@ function oublog_individual_get_activity_details($cm, $urlroot, $oublog, $current
         $records = $DB->get_records_sql($sql, $params);
 
         list($unreads, ) = oublog_get_unread_comments($records);
+        list($favourites, ) = oublog_get_favourite_comments($records);
         foreach ($records as $record) {
             if (!isset($usersunread[$record->userid])) {
                 $usersunread[$record->userid] = 0;
             }
             $usersunread[$record->userid] += isset($unreads[$record->id]) ? $unreads[$record->id] : 0;
+
+            if (!isset($usersfavourite[$record->userid])) {
+                $usersfavourite[$record->userid] = 0;
+            }
+            $usersfavourite[$record->userid] += isset($favourites[$record->id]) ? $favourites[$record->id] : 0;
         }
 
         foreach ($allowedindividuals as $user) {
@@ -2093,7 +2100,15 @@ function oublog_individual_get_activity_details($cm, $urlroot, $oublog, $current
                     $msgunread = ' (' . get_string('overviewcommentsunread1', 'oublog', $usersunread[$user->id]) . ')';
                 }
             }
-            $menu[$user->id] = format_string($user->firstname . ' ' . $user->lastname . $msgunread);
+            $msgfavourite = '';
+            if (isset($usersfavourite[$user->id]) && $usersfavourite[$user->id]) {
+                if ($usersfavourite[$user->id] > 1) {
+                    $msgfavourite = ' (' . get_string('overviewcommentsfavourite', 'oublog', $usersfavourite[$user->id]) . ')';
+                } else {
+                    $msgfavourite = ' (' . get_string('overviewcommentsfavourite1', 'oublog', $usersfavourite[$user->id]) . ')';
+                }
+            }
+            $menu[$user->id] = format_string($user->firstname . ' ' . $user->lastname . $msgunread . $msgfavourite);
         }
     }
 
@@ -5422,6 +5437,29 @@ function oublog_mark_comments_read($post, $limit=0) {
     $rs->close();
 }
 
+function oublog_mark_comment_favourite($postid, $commentid, $status = false) {
+    global $DB, $USER;
+
+    if (!$DB->record_exists('oublog_comments', array('id' => $commentid, 'postid' => $postid))) {
+        return false;
+    }
+
+    $record = $DB->record_exists('oublog_comments_favourite', array('commentid' => $commentid, 'userid' => $USER->id));
+    if (($status && $record) || (!$status && !$record)) {
+        return true;
+    }
+
+    if ($status) {
+        $record = new stdClass;
+        $record->postid = $postid;
+        $record->userid = $USER->id;
+        $record->commentid = $commentid;
+        $DB->insert_record('oublog_comments_favourite', $record);
+    } else {
+        $DB->delete_records('oublog_comments_favourite', array('commentid' => $commentid, 'userid' => $USER->id));
+    }
+}
+
 function oublog_get_unread_comments($posts) {
     global $DB, $USER;
 
@@ -5449,6 +5487,37 @@ function oublog_get_unread_comments($posts) {
     $total = 0;
     foreach ($records as $unread) {
         $total += $unread;
+    }
+    return array($records, $total);
+}
+
+function oublog_get_favourite_comments($posts) {
+    global $DB, $USER;
+
+    $getid = function($obj) {
+        return $obj->id;
+    };
+
+    $postsids = array_map($getid, $posts);
+    list($postssql, $postsparams) = $DB->get_in_or_equal($postsids, SQL_PARAMS_NAMED);
+    $sql = "SELECT p.id, COUNT(c.id) as favourite
+            FROM {oublog_comments} c
+            JOIN {oublog_posts} p ON p.id=c.postid
+       LEFT JOIN {oublog_comments_favourite} cf ON cf.postid = c.postid AND cf.userid = :userid AND cf.commentid=c.id
+            WHERE c.postid $postssql
+            AND cf.id IS NOT NULL
+            AND c.deletedby IS NULL
+            GROUP BY p.id";
+
+    $params = array(
+        'userid' => $USER->id,
+    );
+    $params = array_merge($params, $postsparams);
+
+    $records = $DB->get_records_sql_menu($sql, $params);
+    $total = 0;
+    foreach ($records as $favourite) {
+        $total += $favourite;
     }
     return array($records, $total);
 }
