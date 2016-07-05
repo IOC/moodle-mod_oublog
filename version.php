@@ -25,7 +25,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version  = 2015052900;
+$plugin->version  = 2014072501;
 $plugin->requires = 2014051200;
 $plugin->cron     = 60*60*4; // 4 hours.
 $plugin->component = 'mod_oublog';
