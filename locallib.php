@@ -2116,8 +2116,10 @@ function oublog_individual_get_activity_details($cm, $urlroot, $oublog, $current
         $params = array_merge($params, $usersparams);
         $records = $DB->get_records_sql($sql, $params);
 
-        list($unreads, ) = oublog_get_unread_comments($records);
-        list($favourites, ) = oublog_get_favourite_comments($records);
+        if ($records) {
+            list($unreads, ) = oublog_get_unread_comments($records);
+            list($favourites, ) = oublog_get_favourite_comments($records);
+        }
         foreach ($records as $record) {
             if (!isset($usersunread[$record->userid])) {
                 $usersunread[$record->userid] = 0;
