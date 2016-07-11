@@ -234,7 +234,7 @@ list($posts, $recordcount) = oublog_get_posts($oublog, $context, $offset, $cm, $
 
 // Read tracking
 if (isloggedin() and $oublog->readtracking) {
-    if ($posts) {
+    if ($posts && is_array($posts)) {
         list($commentsunreadbypost, ) = oublog_get_unread_comments($posts);
         foreach ($posts as $post) {
             oublog_mark_read($post);
@@ -249,7 +249,7 @@ if (isloggedin() and $oublog->readtracking) {
 
 // Favourite tracking
 if (isloggedin()) {
-    if ($posts) {
+    if ($posts && is_array($posts)) {
         list($commentsfavouritedbypost, ) = oublog_get_favourite_comments($posts);
     }
 }
@@ -450,7 +450,7 @@ if (!empty($CFG->enableportfolios) &&
 
     // Note: render_export_button_top and render_export_button_bottom are added to
     // support the OSEP design which includes the export button differently from the old OU theme.
-    if (!empty($posts)) {
+    if (!empty($posts) && is_array($posts)) {
         $oublogoutput->render_export_button_top($context, $postsoublog, null, $oubloguserid,
                 $canaudit, $offset, $currentgroup, $currentindividual, $tagid, $cm, $course->id, $masterblog ? 1 : 0);
     }
@@ -511,7 +511,7 @@ if (($showpostbutton || $capable) && $oublog->postuntil != 0) {
     }
 }
 // If timed comments show info.
-if ($posts) {
+if ($posts && is_array($posts)) {
     $maxpost = (object) array('allowcomments' => false, 'visibility' => OUBLOG_VISIBILITY_COURSEUSER);
     foreach ($posts as $apost) {
         // Work out if any posts on page allow commenting + max visibility.
@@ -572,7 +572,7 @@ if ($canview) {
 echo '</div>';
 
 // Print blog posts.
-if ($posts) {
+if ($posts && is_array($posts)) {
     if ($recordcount > $postperpage) {
         echo "<div class='oublog-paging'>";
         echo $OUTPUT->paging_bar($recordcount, $page, $postperpage, $returnurl);
