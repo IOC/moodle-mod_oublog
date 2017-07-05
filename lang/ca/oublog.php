@@ -199,8 +199,8 @@ $string['no_blogtogetheroringroups'] = 'No (comú o per grups)';
 $string['separateindividualblogs'] = 'Sí, separats';
 $string['visibleindividualblogs'] = 'Sí, visibles';
 
-$string['separateindividual'] = 'Blogs&nbsp;individuals&nbsp;separasts';
-$string['visibleindividual'] = 'Blogs&nbsp;individuals&nbsp;visibles';
+$string['separateindividual'] = 'Blogs individuals separasts';
+$string['visibleindividual'] = 'Blogs individuals visibles';
 $string['individualvisible'] = 'Visible';
 $string['viewallusers'] = 'Mostra tots els usuaris';
 $string['viewallusersingroup'] = 'Mostra tots els usuaris del grup';
